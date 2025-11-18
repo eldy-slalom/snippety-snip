@@ -35,9 +35,9 @@ Based on Next.js App Router structure in `/package/` directory:
 
 **Purpose**: Project initialization and database schema updates
 
-- [ ] T001 Create database migration for snippets table in package/lib/db/migrations/003_add_snippets.sql
-- [ ] T002 [P] Create snippet TypeScript types in package/types/snippet.ts
-- [ ] T003 [P] Create base snippet validation utilities in package/utils/snippet-validators.ts
+- [x] T001 Create database migration for snippets table in package/lib/db/migrations/003_add_snippets.sql
+- [x] T002 [P] Create snippet TypeScript types in package/types/snippet.ts
+- [x] T003 [P] Create base snippet validation utilities in package/utils/snippet-validators.ts
 
 ---
 
@@ -47,10 +47,10 @@ Based on Next.js App Router structure in `/package/` directory:
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Implement database service layer for snippets in package/lib/db/snippets.ts
-- [ ] T005 [P] Create API route handler for POST /api/snippets in package/app/api/snippets/route.ts
-- [ ] T006 [P] Create basic SnippetForm component in package/components/snippets/SnippetForm.tsx
-- [ ] T007 Update database initialization to run new migrations in package/lib/db/init.ts
+- [x] T004 Implement database service layer for snippets in package/lib/db/snippets.ts
+- [x] T005 [P] Create API route handler for POST /api/snippets in package/app/api/snippets/route.ts
+- [x] T006 [P] Create basic SnippetForm component in package/components/snippets/SnippetForm.tsx
+- [x] T007 Update database initialization to run new migrations in package/lib/db/init.ts
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -66,9 +66,9 @@ Based on Next.js App Router structure in `/package/` directory:
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T008 [P] [US1] Unit test for snippet creation service function in package/lib/db/**tests**/snippets.test.ts
-- [ ] T009 [P] [US1] Integration test for POST /api/snippets endpoint in package/app/api/snippets/**tests**/route.test.ts
-- [ ] T010 [P] [US1] Component test for SnippetForm basic rendering in package/components/snippets/**tests**/SnippetForm.test.tsx
+- [x] T008 [P] [US1] Unit test for snippet creation service function in package/lib/db/**tests**/snippets.test.ts
+- [x] T009 [P] [US1] Integration test for POST /api/snippets endpoint in package/app/api/snippets/**tests**/route.test.ts
+- [x] T010 [P] [US1] Component test for SnippetForm basic rendering in package/components/snippets/**tests**/SnippetForm.test.tsx
 
 ### Implementation for User Story 1
 
