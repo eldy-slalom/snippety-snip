@@ -29,9 +29,9 @@
 
 **Purpose**: Project structure verification and preparation
 
-- [ ] T001 Verify existing project structure matches plan.md requirements
-- [ ] T002 [P] Verify TypeScript configuration supports strict mode in package/tsconfig.json
-- [ ] T003 [P] Verify Jest and React Testing Library are configured in package/package.json
+- [X] T001 Verify existing project structure matches plan.md requirements
+- [X] T002 [P] Verify TypeScript configuration supports strict mode in package/tsconfig.json
+- [X] T003 [P] Verify Jest and React Testing Library are configured in package/package.json
 
 ---
 
@@ -41,9 +41,9 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Create database migration file package/lib/db/migrations/002_add_tags.sql with tags and snippet_tags tables
-- [ ] T005 [P] Create TypeScript type definitions in package/types/tag.ts (Tag, SnippetTag interfaces)
-- [ ] T006 [P] Create tag validation utilities in package/utils/tag-validators.ts (validateTagFormat, normalizeTagName, trimTag)
+- [X] T004 Create database migration file package/lib/db/migrations/002_add_tags.sql with tags and snippet_tags tables
+- [X] T005 [P] Create TypeScript type definitions in package/types/tag.ts (Tag, SnippetTag interfaces)
+- [X] T006 [P] Create tag validation utilities in package/utils/tag-validators.ts (validateTagFormat, normalizeTagName, trimTag)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
@@ -59,39 +59,39 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T007 [P] [US1] Write unit tests for TagService.createOrFindTag() in package/lib/db/__tests__/tags.test.ts
-- [ ] T008 [P] [US1] Write unit tests for TagService.getTagsByPrefix() in package/lib/db/__tests__/tags.test.ts
-- [ ] T009 [P] [US1] Write unit tests for TagService.getTagsBySnippetId() in package/lib/db/__tests__/tags.test.ts
-- [ ] T010 [P] [US1] Write unit tests for tag validators in package/utils/__tests__/tag-validators.test.ts
-- [ ] T011 [P] [US1] Write integration test for GET /api/tags endpoint in package/app/api/tags/__tests__/route.test.ts
-- [ ] T012 [P] [US1] Write component tests for TagInput in package/components/snippets/__tests__/TagInput.test.tsx
-- [ ] T013 [P] [US1] Write component tests for TagList in package/components/snippets/__tests__/TagList.test.tsx
+- [X] T007 [P] [US1] Write unit tests for TagService.createOrFindTag() in package/lib/db/__tests__/tags.test.ts
+- [X] T008 [P] [US1] Write unit tests for TagService.getTagsByPrefix() in package/lib/db/__tests__/tags.test.ts
+- [X] T009 [P] [US1] Write unit tests for TagService.getTagsBySnippetId() in package/lib/db/__tests__/tags.test.ts
+- [X] T010 [P] [US1] Write unit tests for tag validators in package/utils/__tests__/tag-validators.test.ts
+- [X] T011 [P] [US1] Write integration test for GET /api/tags endpoint in package/app/api/tags/__tests__/route.test.ts
+- [X] T012 [P] [US1] Write component tests for TagInput in package/components/snippets/__tests__/TagInput.test.tsx
+- [X] T013 [P] [US1] Write component tests for TagList in package/components/snippets/__tests__/TagList.test.tsx
 
 ### Implementation for User Story 1
 
 #### Database Layer
 
-- [ ] T014 [US1] Implement TagService class in package/lib/db/tags.ts with createOrFindTag() method
-- [ ] T015 [US1] Implement TagService.getTagsByPrefix() method in package/lib/db/tags.ts for autocomplete
-- [ ] T016 [US1] Implement TagService.getTagsBySnippetId() method in package/lib/db/tags.ts to fetch snippet tags
+- [X] T014 [US1] Implement TagService class in package/lib/db/tags.ts with createOrFindTag() method
+- [X] T015 [US1] Implement TagService.getTagsByPrefix() method in package/lib/db/tags.ts for autocomplete
+- [X] T016 [US1] Implement TagService.getTagsBySnippetId() method in package/lib/db/tags.ts to fetch snippet tags
 - [ ] T017 [US1] Update SnippetService in package/lib/db/snippets.ts to handle tag associations on create/update
 - [ ] T018 [US1] Update SnippetService.getAllSnippets() in package/lib/db/snippets.ts to include tags via JOIN
 - [ ] T019 [US1] Update SnippetService.getSnippetById() in package/lib/db/snippets.ts to include tags via JOIN
 
 #### API Layer
 
-- [ ] T020 [US1] Create GET handler in package/app/api/tags/route.ts for autocomplete endpoint
-- [ ] T021 [US1] Implement query parameter validation and error handling in package/app/api/tags/route.ts
-- [ ] T022 [US1] Add SQL injection prevention using parameterized queries in package/app/api/tags/route.ts
+- [X] T020 [US1] Create GET handler in package/app/api/tags/route.ts for autocomplete endpoint
+- [X] T021 [US1] Implement query parameter validation and error handling in package/app/api/tags/route.ts
+- [X] T022 [US1] Add SQL injection prevention using parameterized queries in package/app/api/tags/route.ts
 
 #### Component Layer
 
-- [ ] T023 [US1] Create TagInput Client Component in package/components/snippets/TagInput.tsx with input field
-- [ ] T024 [US1] Implement autocomplete dropdown with debouncing in package/components/snippets/TagInput.tsx
-- [ ] T025 [US1] Add client-side tag validation (format, length, duplicates) in package/components/snippets/TagInput.tsx
-- [ ] T026 [US1] Implement tag normalization (trim, lowercase) in package/components/snippets/TagInput.tsx
-- [ ] T027 [US1] Add tag removal functionality in package/components/snippets/TagInput.tsx
-- [ ] T028 [US1] Create TagList Server Component in package/components/snippets/TagList.tsx to display tags as badges
+- [X] T023 [US1] Create TagInput Client Component in package/components/snippets/TagInput.tsx with input field
+- [X] T024 [US1] Implement autocomplete dropdown with debouncing in package/components/snippets/TagInput.tsx
+- [X] T025 [US1] Add client-side tag validation (format, length, duplicates) in package/components/snippets/TagInput.tsx
+- [X] T026 [US1] Implement tag normalization (trim, lowercase) in package/components/snippets/TagInput.tsx
+- [X] T027 [US1] Add tag removal functionality in package/components/snippets/TagInput.tsx
+- [X] T028 [US1] Create TagList Server Component in package/components/snippets/TagList.tsx to display tags as badges
 - [ ] T029 [US1] Update SnippetForm component in package/components/snippets/SnippetForm.tsx to include TagInput
 - [ ] T030 [US1] Update snippet creation page in package/app/snippets/new/page.tsx to handle tags in form submission
 - [ ] T031 [US1] Update snippet edit page in package/app/snippets/[id]/page.tsx to pre-populate tags and handle updates
