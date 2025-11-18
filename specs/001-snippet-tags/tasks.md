@@ -74,9 +74,9 @@
 - [X] T014 [US1] Implement TagService class in package/lib/db/tags.ts with createOrFindTag() method
 - [X] T015 [US1] Implement TagService.getTagsByPrefix() method in package/lib/db/tags.ts for autocomplete
 - [X] T016 [US1] Implement TagService.getTagsBySnippetId() method in package/lib/db/tags.ts to fetch snippet tags
-- [ ] T017 [US1] Update SnippetService in package/lib/db/snippets.ts to handle tag associations on create/update
-- [ ] T018 [US1] Update SnippetService.getAllSnippets() in package/lib/db/snippets.ts to include tags via JOIN
-- [ ] T019 [US1] Update SnippetService.getSnippetById() in package/lib/db/snippets.ts to include tags via JOIN
+- [X] T017 [US1] Update SnippetService in package/lib/db/snippets.ts to handle tag associations on create/update
+- [X] T018 [US1] Update SnippetService.getAllSnippets() in package/lib/db/snippets.ts to include tags via JOIN
+- [X] T019 [US1] Update SnippetService.getSnippetById() in package/lib/db/snippets.ts to include tags via JOIN
 
 #### API Layer
 
@@ -92,15 +92,15 @@
 - [X] T026 [US1] Implement tag normalization (trim, lowercase) in package/components/snippets/TagInput.tsx
 - [X] T027 [US1] Add tag removal functionality in package/components/snippets/TagInput.tsx
 - [X] T028 [US1] Create TagList Server Component in package/components/snippets/TagList.tsx to display tags as badges
-- [ ] T029 [US1] Update SnippetForm component in package/components/snippets/SnippetForm.tsx to include TagInput
-- [ ] T030 [US1] Update snippet creation page in package/app/snippets/new/page.tsx to handle tags in form submission
-- [ ] T031 [US1] Update snippet edit page in package/app/snippets/[id]/page.tsx to pre-populate tags and handle updates
+- [X] T029 [US1] Update SnippetForm component in package/components/snippets/SnippetForm.tsx to include TagInput
+- [X] T030 [US1] Update snippet creation page in package/app/snippets/new/page.tsx to handle tags in form submission
+- [X] T031 [US1] Update snippet edit page in package/app/snippets/[id]/page.tsx to pre-populate tags and handle updates
 
 #### Integration
 
-- [ ] T032 [US1] Integrate TagInput with API endpoint for autocomplete in package/components/snippets/TagInput.tsx
-- [ ] T033 [US1] Ensure tag validation errors display clearly in package/components/snippets/TagInput.tsx
-- [ ] T034 [US1] Verify tag normalization works end-to-end (input → storage → display)
+- [X] T032 [US1] Integrate TagInput with API endpoint for autocomplete in package/components/snippets/TagInput.tsx
+- [X] T033 [US1] Ensure tag validation errors display clearly in package/components/snippets/TagInput.tsx
+- [X] T034 [US1] Verify tag normalization works end-to-end (input → storage → display)
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently. Users can add tags to snippets, see autocomplete suggestions, and tags are stored correctly.
 
