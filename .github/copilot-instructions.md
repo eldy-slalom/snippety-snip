@@ -13,3 +13,9 @@ The project documentation will be built during the bootcamp sessions.
 - [Functional Requirements](../docs/functional-requirements.md) - Core functional requirements for the todo app
 - [UI Guidelines](../docs/ui-guidelines.md) - Design system and UI guidelines for the todo app
 - [Testing Guidelines](../docs/testing-guidelines.md) - Testing strategy and best practices
+
+## Custom Agents
+
+This project uses GitHub Copilot custom agents for specialized tasks:
+
+- [Cloud Agent](agents/cloud-agent.md) - Expert in cloud infrastructure, deployment, and DevOps tasks. Delegate cloud-related work such as CI/CD configuration, Docker setup, infrastructure as code, and deployment automation to this agent.
