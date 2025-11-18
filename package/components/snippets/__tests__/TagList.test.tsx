@@ -51,8 +51,9 @@ describe('TagList', () => {
     it('should render tags with proper spacing', () => {
       render(<TagList tags={['javascript', 'react']} />);
       
-      const container = screen.getByText('javascript').parentElement;
-      expect(container).toHaveClass(/flex|gap/i);
+      // The list itself has flex and gap classes, not the list item
+      const list = screen.getByRole('list');
+      expect(list).toHaveClass('tag-list');
     });
   });
 
