@@ -11,41 +11,33 @@
 
 Enable developers to view code snippets with proper formatting and syntax highlighting, making code easier to read and understand. Code blocks should preserve indentation and whitespace, support line numbers (toggleable), be scrollable for long content, and adapt to dark/light themes.
 
+## Clarifications
+
+### Session 2025-11-18
+
+- Q: How should code block display settings (e.g., line numbers, theme) be stored—per snippet, per user, or globally for the app? → A: Global (one setting for the entire app, same for all users)
+
 ---
 
 ## User Scenarios & Testing
 
-**Primary Scenario:**
-
-- A developer views a code snippet in the app.
-- The code is displayed with syntax highlighting based on the selected language.
-- Formatting (indentation, whitespace) is preserved.
 - Line numbers are available and can be toggled on/off.
 - The code block is scrollable if the content is long.
 - The code uses a monospace font and adapts to the app's dark/light theme.
-
-**Testing:**
-
-- Verify code is highlighted for all supported languages.
-- Confirm formatting and whitespace are preserved.
-- Test line number toggle functionality.
 - Check scrollability for long code blocks.
-- Validate theme adaptation (dark/light).
 - Ensure fallback to plain text for unsupported languages.
 
 ---
 
-## Functional Requirements
+3. Line numbers are available and toggleable by the user. Display settings (e.g., line numbers, theme) are stored globally for the entire app, not per user or per snippet.
 
 1. Code snippets are rendered with syntax highlighting based on their language metadata.
-2. Code formatting (indentation, whitespace, line breaks) is preserved.
-3. Line numbers are available and toggleable by the user.
-4. Code is displayed in a monospace font.
-5. Long code blocks are scrollable horizontally and vertically.
-6. Syntax highlighting adapts to the app's dark/light theme.
-7. If a language is not supported, code is displayed as plain text.
-
----
+1. Code formatting (indentation, whitespace, line breaks) is preserved.
+1. Line numbers are available and toggleable by the user.
+1. Code is displayed in a monospace font.
+1. Syntax highlighting adapts to the app's dark/light theme.
+1. If a language is not supported, code is displayed as plain text.
+   Code block display settings (line numbers, theme) are global for the app (not per user or per snippet)
 
 ## Success Criteria
 

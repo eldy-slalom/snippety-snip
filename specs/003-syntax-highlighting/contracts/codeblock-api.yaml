@@ -1,0 +1,44 @@
+openapi: 3.0.0
+info:
+  title: CodeBlock API
+  version: 1.0.0
+  description: API for rendering code blocks with syntax highlighting
+paths:
+  /api/codeblock/highlight:
+    post:
+      summary: Highlight code snippet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  description: Code content to highlight
+                language:
+                  type: string
+                  description: Programming language
+                showLineNumbers:
+                  type: boolean
+                  description: Show line numbers
+                theme:
+                  type: string
+                  enum: [dark, light]
+                  description: Theme for highlighting
+      responses:
+        "200":
+          description: Highlighted code block HTML
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  html:
+                    type: string
+                    description: Rendered HTML for code block
+        "400":
+          description: Invalid input
+        "500":
+          description: Highlighting error
