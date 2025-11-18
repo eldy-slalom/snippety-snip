@@ -1,0 +1,56 @@
+.snippetView {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #00ff41;
+}
+
+.metadata {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.language {
+  background-color: #1e3a2e;
+  color: #00ff41;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-family: "Courier New", monospace;
+}
+
+.date {
+  color: #999;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.tag {
+  background-color: #0a0e0f;
+  color: #00ffff;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  border: 1px solid #1e3a2e;
+  font-size: 0.875rem;
+}
+
+.codeSection {
+  margin-top: 2rem;
+}

@@ -1,0 +1,85 @@
+.codeBlock {
+  margin: 1rem 0;
+  border: 1px solid #333;
+  border-radius: 8px;
+  overflow: hidden;
+  font-family: "Courier New", monospace;
+}
+
+.toolbar {
+  background-color: #1e3a2e;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #333;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.toggleButton {
+  background-color: #00ff41;
+  color: #0a0e0f;
+  border: none;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  font-family: "Courier New", monospace;
+  transition: background-color 0.2s;
+}
+
+.toggleButton:hover {
+  background-color: #00cc33;
+}
+
+.toggleButton:focus {
+  outline: 2px solid #00ffff;
+  outline-offset: 2px;
+}
+
+.codeContent {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 600px;
+}
+
+.codeContent pre {
+  margin: 0;
+  padding: 1rem;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.codeContent code {
+  font-family: "Courier New", monospace;
+}
+
+.withLineNumbers pre {
+  counter-reset: line;
+}
+
+.withLineNumbers pre code {
+  display: block;
+}
+
+.withLineNumbers pre code::before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  width: 2em;
+  margin-right: 1em;
+  text-align: right;
+  color: #666;
+  user-select: none;
+}
+
+.loading {
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+}
+
+.error {
+  padding: 1rem;
+  background-color: #fee;
+  color: #c00;
+  border-bottom: 1px solid #c00;
+}
