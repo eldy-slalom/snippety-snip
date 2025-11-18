@@ -51,15 +51,38 @@ export async function POST(request: NextRequest) {
         "markdown",
         "bash",
         "powershell",
+        "plaintext", // For "other" and unsupported languages
       ],
     });
 
     // Determine the Shiki theme
     const shikiTheme = theme === "dark" ? "github-dark" : "github-light";
 
+    // Language mapping for common variations
+    const languageMap: Record<string, string> = {
+      js: "javascript",
+      ts: "typescript",
+      py: "python",
+      rb: "ruby",
+      sh: "bash",
+      shell: "bash",
+      c: "cpp",
+      "c++": "cpp",
+      "c#": "csharp",
+      cs: "csharp",
+      yml: "yaml",
+      md: "markdown",
+      ps1: "powershell",
+      other: "plaintext", // Map "other" to plaintext
+      text: "plaintext",
+    };
+
+    // Normalize language name
+    let normalizedLang = language.toLowerCase().trim();
+    normalizedLang = languageMap[normalizedLang] || normalizedLang;
+
     // Check if language is supported
     const supportedLangs = highlighter.getLoadedLanguages();
-    const normalizedLang = language.toLowerCase();
 
     let html: string;
     if (supportedLangs.includes(normalizedLang)) {
@@ -69,7 +92,12 @@ export async function POST(request: NextRequest) {
         theme: shikiTheme,
       });
     } else {
-      // Fallback to plain text
+      // Fallback to plain text with note about unsupported language
+      console.log(
+        `Language "${language}" (normalized: "${normalizedLang}") not supported. Supported: ${supportedLangs.join(
+          ", "
+        )}`
+      );
       html = `<pre><code>${escapeHtml(content)}</code></pre>`;
     }
 
