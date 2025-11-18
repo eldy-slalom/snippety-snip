@@ -3,9 +3,14 @@
  * Handles all database operations for snippets
  */
 
-import { getDatabase } from './client';
-import { TagService } from './tags';
-import type { Tag } from '@/types/tag';
+import { getDatabase } from "./client";
+import { TagService } from "./tags";
+import type { Tag } from "@/types/tag";
+import { normalizeLineEndings } from "../../utils/snippet-validators";
+import type {
+  CreateSnippetData as MVPCreateSnippetData,
+  Snippet as MVPSnippet,
+} from "../../types/snippet";
 
 export interface Snippet {
   id: number;
@@ -17,7 +22,7 @@ export interface Snippet {
   updated_at: string;
 }
 
-export interface SnippetWithTags extends Omit<Snippet, 'tags'> {
+export interface SnippetWithTags extends Omit<Snippet, "tags"> {
   tagList: Tag[];
 }
 
@@ -45,7 +50,7 @@ export class SnippetService {
   static getAllSnippets(): SnippetWithTags[] {
     const db = getDatabase();
     const snippets = db
-      .prepare('SELECT * FROM snippets ORDER BY updated_at DESC')
+      .prepare("SELECT * FROM snippets ORDER BY updated_at DESC")
       .all() as Snippet[];
 
     return snippets.map((snippet) => ({
@@ -60,7 +65,7 @@ export class SnippetService {
   static getSnippetById(id: number): SnippetWithTags | null {
     const db = getDatabase();
     const snippet = db
-      .prepare('SELECT * FROM snippets WHERE id = ?')
+      .prepare("SELECT * FROM snippets WHERE id = ?")
       .get(id) as Snippet | undefined;
 
     if (!snippet) {
@@ -79,9 +84,9 @@ export class SnippetService {
   static createSnippet(data: CreateSnippetData): SnippetWithTags {
     const db = getDatabase();
     const stmt = db.prepare(
-      'INSERT INTO snippets (title, content, language, tags) VALUES (?, ?, ?, ?)'
+      "INSERT INTO snippets (title, content, language, tags) VALUES (?, ?, ?, ?)"
     );
-    const result = stmt.run(data.title, data.content, data.language, '');
+    const result = stmt.run(data.title, data.content, data.language, "");
     const snippetId = result.lastInsertRowid as number;
 
     // Associate tags
@@ -91,7 +96,7 @@ export class SnippetService {
 
     const snippet = this.getSnippetById(snippetId);
     if (!snippet) {
-      throw new Error('Failed to retrieve created snippet');
+      throw new Error("Failed to retrieve created snippet");
     }
     return snippet;
   }
@@ -108,22 +113,22 @@ export class SnippetService {
     const values: unknown[] = [];
 
     if (data.title !== undefined) {
-      updates.push('title = ?');
+      updates.push("title = ?");
       values.push(data.title);
     }
     if (data.content !== undefined) {
-      updates.push('content = ?');
+      updates.push("content = ?");
       values.push(data.content);
     }
     if (data.language !== undefined) {
-      updates.push('language = ?');
+      updates.push("language = ?");
       values.push(data.language);
     }
 
     if (updates.length > 0) {
       values.push(id);
       const stmt = db.prepare(
-        `UPDATE snippets SET ${updates.join(', ')} WHERE id = ?`
+        `UPDATE snippets SET ${updates.join(", ")} WHERE id = ?`
       );
       stmt.run(...values);
     }
@@ -155,7 +160,9 @@ export class SnippetService {
     const placeholders = tags.map(() => "tags LIKE ?").join(" OR ");
     const searchTerms = tags.map((tag) => `%${tag}%`);
     return db
-      .prepare(`SELECT * FROM snippets WHERE ${placeholders} ORDER BY updated_at DESC`)
+      .prepare(
+        `SELECT * FROM snippets WHERE ${placeholders} ORDER BY updated_at DESC`
+      )
       .all(...searchTerms) as Snippet[];
   }
 
@@ -165,8 +172,107 @@ export class SnippetService {
   static filterByLanguage(language: string): Snippet[] {
     const db = getDatabase();
     return db
-      .prepare("SELECT * FROM snippets WHERE language = ? ORDER BY updated_at DESC")
+      .prepare(
+        "SELECT * FROM snippets WHERE language = ? ORDER BY updated_at DESC"
+      )
       .all(language) as Snippet[];
   }
-}
 
+  /**
+   * MVP FUNCTIONS - Simplified interface for basic snippet creation
+   * These functions provide a simpler interface for the MVP phase
+   */
+
+  /**
+   * Create a basic snippet with only title and content (MVP)
+   * Uses default values for language and tags
+   */
+  static createBasicSnippet(data: MVPCreateSnippetData): MVPSnippet {
+    const db = getDatabase();
+    const now = new Date().toISOString();
+
+    // Normalize line endings to LF (Unix-style)
+    const normalizedContent = normalizeLineEndings(data.content);
+
+    const stmt = db.prepare(`
+      INSERT INTO snippets (title, content, language, tags, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `);
+
+    try {
+      // Use default values for MVP: language='other', tags='general'
+      const result = stmt.run(
+        data.title,
+        normalizedContent,
+        "other",
+        "general",
+        now,
+        now
+      );
+
+      // Fetch the created snippet
+      const selectStmt = db.prepare("SELECT * FROM snippets WHERE id = ?");
+      const snippet = selectStmt.get(result.lastInsertRowid) as
+        | Snippet
+        | undefined;
+
+      if (!snippet) {
+        throw new Error("Failed to retrieve created snippet");
+      }
+
+      // Convert to MVP format (remove language and tags fields)
+      return {
+        id: snippet.id,
+        title: snippet.title,
+        content: snippet.content,
+        created_at: snippet.created_at,
+        updated_at: snippet.updated_at,
+      };
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to create snippet: ${error.message}`);
+      }
+      throw new Error("Failed to create snippet: Unknown error");
+    }
+  }
+
+  /**
+   * Get all basic snippets (MVP) - returns simplified format
+   */
+  static getAllBasicSnippets(): MVPSnippet[] {
+    const db = getDatabase();
+    const stmt = db.prepare("SELECT * FROM snippets ORDER BY created_at DESC");
+    const snippets = stmt.all() as Snippet[];
+
+    // Convert to MVP format (remove language and tags fields)
+    return snippets.map((snippet) => ({
+      id: snippet.id,
+      title: snippet.title,
+      content: snippet.content,
+      created_at: snippet.created_at,
+      updated_at: snippet.updated_at,
+    }));
+  }
+
+  /**
+   * Get a basic snippet by ID (MVP) - returns simplified format
+   */
+  static getBasicSnippetById(id: number): MVPSnippet | null {
+    const db = getDatabase();
+    const stmt = db.prepare("SELECT * FROM snippets WHERE id = ?");
+    const snippet = stmt.get(id) as Snippet | undefined;
+
+    if (!snippet) {
+      return null;
+    }
+
+    // Convert to MVP format (remove language and tags fields)
+    return {
+      id: snippet.id,
+      title: snippet.title,
+      content: snippet.content,
+      created_at: snippet.created_at,
+      updated_at: snippet.updated_at,
+    };
+  }
+}

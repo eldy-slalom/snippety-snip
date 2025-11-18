@@ -20,7 +20,7 @@ async function initializeDatabase() {
     console.log("Database connection established");
 
     // Run migrations
-    const migrationFiles = ["001_initial_schema.sql"];
+    const migrationFiles = ["001_initial_schema.sql", "002_add_tags.sql"];
 
     for (const migrationFile of migrationFiles) {
       const migrationPath = join(MIGRATIONS_DIR, migrationFile);
@@ -56,4 +56,3 @@ async function initializeDatabase() {
 initializeDatabase();
 
 export { initializeDatabase };
-
