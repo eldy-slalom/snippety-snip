@@ -281,6 +281,7 @@ export default function SnippetForm({ onSuccess, onError }: SnippetFormProps) {
                     type="submit"
                     disabled={isSubmitting || hasErrors()}
                     className="btn btn-primary"
+                    style={{ marginRight: '8px', color: 'black' }}
                 >
                     {isSubmitting ? "Creating..." : "Create Snippet"}
                 </button>

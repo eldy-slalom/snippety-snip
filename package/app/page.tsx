@@ -19,9 +19,6 @@ export default async function Home() {
         {snippets.length === 0 ? (
           <div className="empty-state">
             <p>No snippets found. Start by adding your first snippet!</p>
-            <Link href="/snippets/new" className="btn btn-primary">
-              Add Snippet
-            </Link>
           </div>
         ) : (
           <div className="snippet-list">
