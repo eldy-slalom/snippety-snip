@@ -12,6 +12,8 @@ import type { CreateSnippetData } from "../../../types/snippet";
 const TEST_DB_PATH = join(process.cwd(), "data", "test-snippets.db");
 
 describe("SnippetService - MVP Functions", () => {
+  const defaultLanguage = "javascript";
+
   beforeEach(() => {
     // Clean up test database before each test
     if (existsSync(TEST_DB_PATH)) {
@@ -54,6 +56,7 @@ describe("SnippetService - MVP Functions", () => {
       const snippetData: CreateSnippetData = {
         title: "Test Snippet",
         content: 'console.log("Hello, World!");',
+        language: defaultLanguage,
         tags: ["test"],
       };
 
@@ -63,6 +66,7 @@ describe("SnippetService - MVP Functions", () => {
       expect(result.id).toBeDefined();
       expect(result.title).toBe(snippetData.title);
       expect(result.content).toBe(snippetData.content);
+      expect(result.language).toBe(defaultLanguage);
       expect(result.created_at).toBeDefined();
       expect(result.updated_at).toBeDefined();
       expect(typeof result.id).toBe("number");
@@ -72,6 +76,7 @@ describe("SnippetService - MVP Functions", () => {
       const snippetData: CreateSnippetData = {
         title: "Line Ending Test",
         content: "Line 1\r\nLine 2\r\nLine 3",
+        language: defaultLanguage,
         tags: ["test"],
       };
 
@@ -85,6 +90,7 @@ describe("SnippetService - MVP Functions", () => {
         title: "Formatting Test",
         content:
           'function test() {\n\t  if (true) {\n\t    return "hello";\n\t  }\n}',
+        language: defaultLanguage,
         tags: ["test"],
       };
 
@@ -98,6 +104,7 @@ describe("SnippetService - MVP Functions", () => {
       const snippetData: CreateSnippetData = {
         title: longTitle,
         content: "test content",
+        language: defaultLanguage,
         tags: ["test"],
       };
 
@@ -112,6 +119,7 @@ describe("SnippetService - MVP Functions", () => {
       const snippetData: CreateSnippetData = {
         title: "Large Content Test",
         content: largeContent,
+        language: defaultLanguage,
         tags: ["test"],
       };
 
@@ -125,6 +133,7 @@ describe("SnippetService - MVP Functions", () => {
       const snippetData: CreateSnippetData = {
         title: "",
         content: "some content",
+        language: defaultLanguage,
         tags: ["test"],
       };
 
@@ -137,12 +146,26 @@ describe("SnippetService - MVP Functions", () => {
       const snippetData: CreateSnippetData = {
         title: "Test Title",
         content: "",
+        language: defaultLanguage,
         tags: ["test"],
       };
 
       expect(() => {
         SnippetService.createBasicSnippet(snippetData);
       }).toThrow();
+    });
+
+    it("should throw error for unsupported language", () => {
+      const snippetData: CreateSnippetData = {
+        title: "Invalid Language",
+        content: "console.log('test');",
+        language: "unsupported",
+        tags: ["test"],
+      } as unknown as CreateSnippetData;
+
+      expect(() => {
+        SnippetService.createBasicSnippet(snippetData);
+      }).toThrow("Unsupported language identifier: unsupported");
     });
   });
 
@@ -158,6 +181,7 @@ describe("SnippetService - MVP Functions", () => {
       const snippet1 = SnippetService.createBasicSnippet({
         title: "First Snippet",
         content: "first content",
+        language: defaultLanguage,
         tags: ["test"],
       });
 
@@ -167,6 +191,7 @@ describe("SnippetService - MVP Functions", () => {
       const snippet2 = SnippetService.createBasicSnippet({
         title: "Second Snippet",
         content: "second content",
+        language: defaultLanguage,
         tags: ["test"],
       });
 
@@ -183,6 +208,7 @@ describe("SnippetService - MVP Functions", () => {
       const created = SnippetService.createBasicSnippet({
         title: "Test Snippet",
         content: "test content",
+        language: defaultLanguage,
         tags: ["test"],
       });
 

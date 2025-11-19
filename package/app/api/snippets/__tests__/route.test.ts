@@ -3,7 +3,7 @@
  * TDD Red Phase - Tests written before implementation
  */
 
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import { POST, GET } from "../route";
 import { SnippetService } from "../../../../lib/db/snippets";
 import { getDatabase, closeDatabase } from "../../../../lib/db/client";
@@ -12,21 +12,65 @@ import { unlinkSync, existsSync, mkdirSync } from "fs";
 
 const TEST_DB_PATH = join(process.cwd(), "data", "test-api-snippets.db");
 
+const createPostRequest = (body: unknown): NextRequest =>
+  ({
+    async json() {
+      return body;
+    },
+  } as unknown as NextRequest);
+
+jest.mock("next/server", () => {
+  const createResponse = (
+    data: unknown,
+    init?: { status?: number; headers?: Record<string, string> }
+  ) => ({
+    status: init?.status ?? 200,
+    headers: {
+      "content-type": "application/json",
+      ...(init?.headers ?? {}),
+    },
+    async json() {
+      return data;
+    },
+  });
+
+  class MockNextRequest {}
+
+  return {
+    NextResponse: {
+      json: createResponse,
+    },
+    NextRequest: MockNextRequest,
+  };
+});
+
 // Mock the database path for tests
 jest.mock("../../../../lib/db/client", () => {
-  const originalModule = jest.requireActual("../../../../lib/db/client");
+  const Database = require("better-sqlite3");
+  let testDb: any = null;
+
   return {
-    ...originalModule,
     getDatabase: () => {
-      const Database = require("better-sqlite3");
-      const db = new Database(TEST_DB_PATH);
-      db.pragma("journal_mode = WAL");
-      return db;
+      if (!testDb) {
+        testDb = new Database(TEST_DB_PATH);
+        testDb.pragma("journal_mode = WAL");
+      }
+      return testDb;
     },
+    closeDatabase: () => {
+      if (testDb) {
+        testDb.close();
+        testDb = null;
+      }
+    },
+    runMigration: jest.fn(),
+    getDatabasePath: () => TEST_DB_PATH,
   };
 });
 
 describe("/api/snippets API Integration Tests", () => {
+  const defaultLanguage = "javascript";
+
   beforeEach(() => {
     // Clean up test database before each test
     if (existsSync(TEST_DB_PATH)) {
@@ -69,16 +113,11 @@ describe("/api/snippets API Integration Tests", () => {
       const requestBody = {
         title: "Test API Snippet",
         content: 'console.log("API test");',
+        language: defaultLanguage,
         tags: ["javascript", "test"],
       };
 
-      const request = new NextRequest("http://localhost:3000/api/snippets", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
+      const request = createPostRequest(requestBody);
 
       const response = await POST(request);
       const responseData = await response.json();
@@ -88,6 +127,7 @@ describe("/api/snippets API Integration Tests", () => {
       expect(responseData.snippet.id).toBeDefined();
       expect(responseData.snippet.title).toBe(requestBody.title);
       expect(responseData.snippet.content).toBe(requestBody.content);
+      expect(responseData.snippet.language).toBe(defaultLanguage);
       expect(responseData.snippet.created_at).toBeDefined();
       expect(responseData.snippet.updated_at).toBeDefined();
     });
@@ -96,16 +136,11 @@ describe("/api/snippets API Integration Tests", () => {
       const requestBody = {
         title: "Line Endings Test",
         content: "Line 1\r\nLine 2\r\nLine 3",
+        language: defaultLanguage,
         tags: ["test"],
       };
 
-      const request = new NextRequest("http://localhost:3000/api/snippets", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
+      const request = createPostRequest(requestBody);
 
       const response = await POST(request);
       const responseData = await response.json();
@@ -118,16 +153,11 @@ describe("/api/snippets API Integration Tests", () => {
       const requestBody = {
         title: "",
         content: "some content",
+        language: defaultLanguage,
         tags: ["test"],
       };
 
-      const request = new NextRequest("http://localhost:3000/api/snippets", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
+      const request = createPostRequest(requestBody);
 
       const response = await POST(request);
       const responseData = await response.json();
@@ -144,16 +174,11 @@ describe("/api/snippets API Integration Tests", () => {
       const requestBody = {
         title: "   \t  \n  ",
         content: "some content",
+        language: defaultLanguage,
         tags: ["test"],
       };
 
-      const request = new NextRequest("http://localhost:3000/api/snippets", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
+      const request = createPostRequest(requestBody);
 
       const response = await POST(request);
       const responseData = await response.json();
@@ -170,16 +195,11 @@ describe("/api/snippets API Integration Tests", () => {
       const requestBody = {
         title: "Valid Title",
         content: "",
+        language: defaultLanguage,
         tags: ["test"],
       };
 
-      const request = new NextRequest("http://localhost:3000/api/snippets", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
+      const request = createPostRequest(requestBody);
 
       const response = await POST(request);
       const responseData = await response.json();
@@ -194,16 +214,11 @@ describe("/api/snippets API Integration Tests", () => {
       const requestBody = {
         title: "Valid Title",
         content: "   \t  \n  ",
+        language: defaultLanguage,
         tags: ["test"],
       };
 
-      const request = new NextRequest("http://localhost:3000/api/snippets", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
+      const request = createPostRequest(requestBody);
 
       const response = await POST(request);
       const responseData = await response.json();
@@ -220,16 +235,11 @@ describe("/api/snippets API Integration Tests", () => {
       const requestBody = {
         title: "",
         content: "",
+        language: defaultLanguage,
         tags: ["test"],
       };
 
-      const request = new NextRequest("http://localhost:3000/api/snippets", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
+      const request = createPostRequest(requestBody);
 
       const response = await POST(request);
       const responseData = await response.json();
@@ -248,16 +258,11 @@ describe("/api/snippets API Integration Tests", () => {
       const requestBody = {
         title: "Large Content Test",
         content: largeContent,
+        language: defaultLanguage,
         tags: ["test"],
       };
 
-      const request = new NextRequest("http://localhost:3000/api/snippets", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
+      const request = createPostRequest(requestBody);
 
       const response = await POST(request);
       const responseData = await response.json();
@@ -272,16 +277,11 @@ describe("/api/snippets API Integration Tests", () => {
       const requestBody = {
         title: "Too Large Content Test",
         content: tooLargeContent,
+        language: defaultLanguage,
         tags: ["test"],
       };
 
-      const request = new NextRequest("http://localhost:3000/api/snippets", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
+      const request = createPostRequest(requestBody);
 
       const response = await POST(request);
       const responseData = await response.json();
@@ -304,16 +304,11 @@ describe("/api/snippets API Integration Tests", () => {
       const requestBody = {
         title: "Test Snippet",
         content: "test content",
+        language: defaultLanguage,
         tags: ["test"],
       };
 
-      const request = new NextRequest("http://localhost:3000/api/snippets", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
+      const request = createPostRequest(requestBody);
 
       const response = await POST(request);
       const responseData = await response.json();
@@ -325,6 +320,55 @@ describe("/api/snippets API Integration Tests", () => {
 
       // Restore original method
       SnippetService.createBasicSnippet = originalCreateBasicSnippet;
+    });
+
+    it("should return 400 when language is missing", async () => {
+      const requestBody = {
+        title: "Missing Language",
+        content: "some content",
+        tags: ["test"],
+      };
+
+      const request = createPostRequest(requestBody);
+
+      const response = await POST(request);
+      const responseData = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(responseData.error).toBe("Validation failed");
+      expect(responseData.details).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            field: "language",
+            message: "Language selection is required",
+          }),
+        ])
+      );
+    });
+
+    it("should return 400 when language is invalid", async () => {
+      const requestBody = {
+        title: "Invalid Language",
+        content: "some content",
+        language: "invalid-lang",
+        tags: ["test"],
+      };
+
+      const request = createPostRequest(requestBody);
+
+      const response = await POST(request);
+      const responseData = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(responseData.error).toBe("Validation failed");
+      expect(responseData.details).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            field: "language",
+            message: "Choose a language from the supported list",
+          }),
+        ])
+      );
     });
   });
 
@@ -342,12 +386,14 @@ describe("/api/snippets API Integration Tests", () => {
       const snippet1 = SnippetService.createBasicSnippet({
         title: "First Snippet",
         content: "first content",
+        language: defaultLanguage,
         tags: ["test"],
       });
 
       const snippet2 = SnippetService.createBasicSnippet({
         title: "Second Snippet",
         content: "second content",
+        language: defaultLanguage,
         tags: ["test"],
       });
 

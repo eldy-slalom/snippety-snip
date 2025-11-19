@@ -3,13 +3,19 @@
  * Includes title, content, and tags fields
  */
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { validateTitle, validateContent } from '../../utils/snippet-validators';
-import TagInput from './TagInput';
-import type { SnippetFormData, SnippetFormErrors } from '../../types/snippet';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { LANGUAGE_OPTIONS } from "@/constants/languages";
+import {
+    validateTitle,
+    validateContent,
+    validateLanguage,
+    validateTags,
+} from "../../utils/snippet-validators";
+import TagInput from "./TagInput";
+import type { SnippetFormData, SnippetFormErrors } from "../../types/snippet";
 
 interface SnippetFormProps {
     onSuccess?: () => void;
@@ -19,9 +25,10 @@ interface SnippetFormProps {
 export default function SnippetForm({ onSuccess, onError }: SnippetFormProps) {
     const router = useRouter();
     const [formData, setFormData] = useState<SnippetFormData>({
-        title: '',
-        content: '',
-        tags: []
+        title: "",
+        content: "",
+        language: "",
+        tags: [],
     });
     const [errors, setErrors] = useState<SnippetFormErrors>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,17 +40,18 @@ export default function SnippetForm({ onSuccess, onError }: SnippetFormProps) {
     const validateField = (field: keyof SnippetFormData, value: string | string[]): string | undefined => {
         let error: string | undefined;
 
-        if (field === 'title' && typeof value === 'string') {
+        if (field === "title" && typeof value === "string") {
             const validationError = validateTitle(value);
             error = validationError?.message;
-        } else if (field === 'content' && typeof value === 'string') {
+        } else if (field === "content" && typeof value === "string") {
             const validationError = validateContent(value);
             error = validationError?.message;
-        } else if (field === 'tags' && Array.isArray(value)) {
-            // Validate that at least one tag is provided
-            if (value.length === 0) {
-                error = 'At least one tag is required';
-            }
+        } else if (field === "language" && typeof value === "string") {
+            const validationError = validateLanguage(value);
+            error = validationError?.message;
+        } else if (field === "tags" && Array.isArray(value)) {
+            const validationError = validateTags(value);
+            error = validationError?.message;
         }
 
         setErrors(prev => ({
@@ -62,6 +70,14 @@ export default function SnippetForm({ onSuccess, onError }: SnippetFormProps) {
             ...prev,
             [field]: value
         }));
+
+        if (field === "language" && typeof value === "string") {
+            const validationError = validateLanguage(value);
+            setErrors(prev => ({
+                ...prev,
+                language: validationError?.message,
+            }));
+        }
     };
 
     /**
@@ -75,20 +91,22 @@ export default function SnippetForm({ onSuccess, onError }: SnippetFormProps) {
      * Handles tag changes
      */
     const handleTagsChange = (newTags: string[]) => {
-        console.log('handleTagsChange called with:', newTags);
-        console.log('Previous formData.tags:', formData.tags);
-        handleInputChange('tags', newTags);
-        console.log('After handleInputChange, formData should update to:', { ...formData, tags: newTags });
-        // Clear tag error when tags are added
-        if (newTags.length > 0 && errors.tags) {
-            setErrors(prev => ({ ...prev, tags: undefined }));
-        }
+        handleInputChange("tags", newTags);
+        validateField("tags", newTags);
     };
 
     /**
      * Checks if form has any validation errors
      */
     const hasErrors = () => {
+        if (!formData.language) {
+            return true;
+        }
+
+        if (!formData.tags || formData.tags.length === 0) {
+            return true;
+        }
+
         return Object.values(errors).some(error => error !== undefined);
     };
 
@@ -96,11 +114,12 @@ export default function SnippetForm({ onSuccess, onError }: SnippetFormProps) {
      * Validates all fields and returns true if there are errors
      */
     const validateAllFields = (): boolean => {
-        const titleError = validateField('title', formData.title);
-        const contentError = validateField('content', formData.content);
-        const tagsError = validateField('tags', formData.tags);
+        const titleError = validateField("title", formData.title);
+        const contentError = validateField("content", formData.content);
+        const languageError = validateField("language", formData.language);
+        const tagsError = validateField("tags", formData.tags);
 
-        return !!(titleError || contentError || tagsError);
+        return !!(titleError || contentError || languageError || tagsError);
     };
 
     /**
@@ -123,22 +142,21 @@ export default function SnippetForm({ onSuccess, onError }: SnippetFormProps) {
         console.log('Submitting form data:', formData);
 
         try {
-            const response = await fetch('/api/snippets', {
-                method: 'POST',
+            const response = await fetch("/api/snippets", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify(formData),
             });
 
             if (!response.ok) {
                 const errorData = await response.json();
-                console.error('API Error Response:', errorData);
 
                 // Show detailed error message if available
-                let errorMessage = errorData.error || 'Failed to create snippet';
+                let errorMessage = errorData.error || "Failed to create snippet";
                 if (errorData.details && errorData.details.length > 0) {
-                    errorMessage += ': ' + errorData.details.map((d: any) => d.message).join(', ');
+                    errorMessage += ": " + errorData.details.map((d: any) => d.message).join(", ");
                 }
 
                 throw new Error(errorMessage);
@@ -148,16 +166,16 @@ export default function SnippetForm({ onSuccess, onError }: SnippetFormProps) {
             if (onSuccess) {
                 onSuccess();
             } else {
-                router.push('/');
+                router.push("/");
             }
 
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Failed to create snippet';
+            const errorMessage =
+                error instanceof Error ? error.message : "Failed to create snippet";
             if (onError) {
                 onError(errorMessage);
             } else {
-                console.error('Error creating snippet:', error);
-                // TODO: Show error message in UI
+                console.error("Error creating snippet:", error);
             }
         } finally {
             setIsSubmitting(false);
@@ -174,9 +192,9 @@ export default function SnippetForm({ onSuccess, onError }: SnippetFormProps) {
                     id="title"
                     type="text"
                     value={formData.title}
-                    onChange={(e) => handleInputChange('title', e.target.value)}
-                    onBlur={() => handleFieldBlur('title')}
-                    className={`form-input ${errors.title ? 'error' : ''}`}
+                    onChange={(e) => handleInputChange("title", e.target.value)}
+                    onBlur={() => handleFieldBlur("title")}
+                    className={`form-input ${errors.title ? "error" : ""}`}
                     placeholder="Enter a descriptive title for your snippet"
                     disabled={isSubmitting}
                     maxLength={100}
@@ -195,9 +213,9 @@ export default function SnippetForm({ onSuccess, onError }: SnippetFormProps) {
                 <textarea
                     id="content"
                     value={formData.content}
-                    onChange={(e) => handleInputChange('content', e.target.value)}
-                    onBlur={() => handleFieldBlur('content')}
-                    className={`form-textarea ${errors.content ? 'error' : ''}`}
+                    onChange={(e) => handleInputChange("content", e.target.value)}
+                    onBlur={() => handleFieldBlur("content")}
+                    className={`form-textarea ${errors.content ? "error" : ""}`}
                     placeholder="Paste your code snippet here..."
                     disabled={isSubmitting}
                     rows={15}
@@ -206,6 +224,34 @@ export default function SnippetForm({ onSuccess, onError }: SnippetFormProps) {
                 {errors.content && (
                     <div className="error-message" role="alert">
                         {errors.content}
+                    </div>
+                )}
+            </div>
+
+            <div className="form-group">
+                <label htmlFor="language" className="form-label">
+                    Language *
+                </label>
+                <select
+                    id="language"
+                    value={formData.language}
+                    onChange={(e) => handleInputChange("language", e.target.value)}
+                    onBlur={() => handleFieldBlur("language")}
+                    className={`form-select ${errors.language ? "error" : ""}`}
+                    disabled={isSubmitting}
+                >
+                    <option value="" disabled>
+                        Select a language
+                    </option>
+                    {LANGUAGE_OPTIONS.map((option) => (
+                        <option key={option.id} value={option.id}>
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
+                {errors.language && (
+                    <div className="error-message" role="alert">
+                        {errors.language}
                     </div>
                 )}
             </div>
@@ -228,11 +274,11 @@ export default function SnippetForm({ onSuccess, onError }: SnippetFormProps) {
                     disabled={isSubmitting || hasErrors()}
                     className="btn btn-primary"
                 >
-                    {isSubmitting ? 'Creating...' : 'Create Snippet'}
+                    {isSubmitting ? "Creating..." : "Create Snippet"}
                 </button>
                 <button
                     type="button"
-                    onClick={() => router.push('/')}
+                    onClick={() => router.push("/")}
                     disabled={isSubmitting}
                     className="btn btn-secondary"
                 >

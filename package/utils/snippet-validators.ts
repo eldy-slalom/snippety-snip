@@ -3,6 +3,8 @@
  * Used by both client-side forms and server-side API routes
  */
 
+import { LANGUAGE_IDS } from "@/constants/languages";
+import type { LanguageId } from "@/constants/languages";
 import { ValidationError } from "../types/snippet";
 
 /**
@@ -77,10 +79,17 @@ export function validateContent(content: string): ValidationError | null {
  * @param content - The content to validate
  * @returns Array of validation errors (empty if all valid)
  */
-export function validateSnippetData(
-  title: string,
-  content: string
-): ValidationError[] {
+export function validateSnippetData({
+  title,
+  content,
+  language,
+  tags,
+}: {
+  title: string;
+  content: string;
+  language: string | null | undefined;
+  tags?: string[];
+}): ValidationError[] {
   const errors: ValidationError[] = [];
 
   const titleError = validateTitle(title);
@@ -93,7 +102,56 @@ export function validateSnippetData(
     errors.push(contentError);
   }
 
+  const languageError = validateLanguage(language);
+  if (languageError) {
+    errors.push(languageError);
+  }
+
+  const tagsError = validateTags(tags);
+  if (tagsError) {
+    errors.push(tagsError);
+  }
+
   return errors;
+}
+
+/**
+ * Validates provided language against supported options.
+ */
+export function validateLanguage(
+  language: string | null | undefined
+): ValidationError | null {
+  if (!language || language.trim() === "") {
+    return {
+      field: "language",
+      message: "Language selection is required",
+    };
+  }
+
+  const normalized = language.toLowerCase() as LanguageId;
+
+  if (!LANGUAGE_IDS.includes(normalized)) {
+    return {
+      field: "language",
+      message: "Choose a language from the supported list",
+    };
+  }
+
+  return null;
+}
+
+/**
+ * Validates snippet tags requirement.
+ */
+export function validateTags(tags?: string[]): ValidationError | null {
+  if (!tags || tags.length === 0) {
+    return {
+      field: "tags",
+      message: "At least one tag is required",
+    };
+  }
+
+  return null;
 }
 
 /**

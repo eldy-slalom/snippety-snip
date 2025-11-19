@@ -6,6 +6,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useRouter } from 'next/navigation';
+import { LANGUAGE_OPTIONS } from '@/constants/languages';
 import SnippetForm from '../SnippetForm';
 
 // Mock Next.js router
@@ -26,6 +27,40 @@ const mockRouter = {
     prefetch: jest.fn(),
 };
 
+async function selectLanguage(
+    user: ReturnType<typeof userEvent.setup>,
+    language = 'javascript'
+) {
+    await user.selectOptions(screen.getByLabelText(/language/i), language);
+}
+
+async function addTag(
+    user: ReturnType<typeof userEvent.setup>,
+    tag = 'javascript'
+) {
+    await user.type(screen.getByRole('textbox', { name: /tags/i }), `${tag}{Enter}`);
+}
+
+async function populateRequiredFields(
+    user: ReturnType<typeof userEvent.setup>,
+    {
+        title = 'Test Snippet',
+        content = 'console.log("test");',
+        language = 'javascript',
+        tag = 'javascript',
+    }: {
+        title?: string;
+        content?: string;
+        language?: string;
+        tag?: string;
+    } = {}
+) {
+    await user.type(screen.getByLabelText(/title/i), title);
+    await user.type(screen.getByLabelText(/code content/i), content);
+    await selectLanguage(user, language);
+    await addTag(user, tag);
+}
+
 describe('SnippetForm Component', () => {
     beforeEach(() => {
         jest.clearAllMocks();
@@ -39,6 +74,7 @@ describe('SnippetForm Component', () => {
 
             expect(screen.getByLabelText(/title/i)).toBeInTheDocument();
             expect(screen.getByLabelText(/code content/i)).toBeInTheDocument();
+            expect(screen.getByLabelText(/language/i)).toBeInTheDocument();
             expect(screen.getByRole('button', { name: /create snippet/i })).toBeInTheDocument();
             expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
         });
@@ -48,6 +84,7 @@ describe('SnippetForm Component', () => {
 
             const titleInput = screen.getByLabelText(/title/i);
             const contentTextarea = screen.getByLabelText(/code content/i);
+            const languageSelect = screen.getByLabelText(/language/i) as HTMLSelectElement;
 
             expect(titleInput).toHaveAttribute('type', 'text');
             expect(titleInput).toHaveAttribute('maxLength', '100');
@@ -56,6 +93,9 @@ describe('SnippetForm Component', () => {
             expect(contentTextarea).toHaveAttribute('rows', '15');
             expect(contentTextarea).toHaveAttribute('maxLength', '50000');
             expect(contentTextarea).toHaveAttribute('placeholder', 'Paste your code snippet here...');
+
+            expect(languageSelect.value).toBe('');
+            expect(languageSelect.options[0]).toHaveTextContent('Select a language');
         });
 
         it('should mark required fields with asterisk', () => {
@@ -63,6 +103,19 @@ describe('SnippetForm Component', () => {
 
             expect(screen.getByText(/title \*/i)).toBeInTheDocument();
             expect(screen.getByText(/code content \*/i)).toBeInTheDocument();
+            expect(screen.getByText(/language \*/i)).toBeInTheDocument();
+        });
+
+        it('should render language options in alphabetical order', () => {
+            render(<SnippetForm />);
+
+            const languageSelect = screen.getByLabelText(/language/i) as HTMLSelectElement;
+            const optionLabels = Array.from(languageSelect.querySelectorAll('option'))
+                .filter(option => option.value !== '')
+                .map(option => option.textContent);
+
+            const expectedLabels = LANGUAGE_OPTIONS.map(option => option.label);
+            expect(optionLabels).toEqual(expectedLabels);
         });
     });
 
@@ -115,6 +168,18 @@ describe('SnippetForm Component', () => {
             expect(screen.getByText('Code content cannot be empty or whitespace only')).toBeInTheDocument();
         });
 
+        it('should show error message when language is not selected', async () => {
+            const user = userEvent.setup();
+            render(<SnippetForm />);
+
+            const languageSelect = screen.getByLabelText(/language/i);
+
+            await user.click(languageSelect);
+            await user.tab(); // Blur without selection
+
+            expect(screen.getByText('Language selection is required')).toBeInTheDocument();
+        });
+
         it('should disable submit button when there are validation errors', async () => {
             const user = userEvent.setup();
             render(<SnippetForm />);
@@ -134,15 +199,35 @@ describe('SnippetForm Component', () => {
             const user = userEvent.setup();
             render(<SnippetForm />);
 
-            const titleInput = screen.getByLabelText(/title/i);
-            const contentTextarea = screen.getByLabelText(/code content/i);
             const submitButton = screen.getByRole('button', { name: /create snippet/i });
 
-            await user.type(titleInput, 'Valid Title');
-            await user.type(contentTextarea, 'console.log("valid content");');
+            await populateRequiredFields(user, {
+                title: 'Valid Title',
+                content: 'console.log("valid content");',
+            });
 
             await waitFor(() => {
                 expect(submitButton).not.toBeDisabled();
+            });
+        });
+
+        it('should show error message when submitting without tags', async () => {
+            const user = userEvent.setup();
+            render(<SnippetForm />);
+
+            await user.type(screen.getByLabelText(/title/i), 'Valid Title');
+            await user.type(screen.getByLabelText(/code content/i), 'console.log("valid content");');
+            await selectLanguage(user);
+
+            const submitButton = screen.getByRole('button', { name: /create snippet/i });
+            const form = submitButton.closest('form');
+            expect(form).not.toBeNull();
+            if (form) {
+                fireEvent.submit(form);
+            }
+
+            await waitFor(() => {
+                expect(screen.getByText('At least one tag is required')).toBeInTheDocument();
             });
         });
     });
@@ -166,14 +251,9 @@ describe('SnippetForm Component', () => {
 
             render(<SnippetForm />);
 
-            const titleInput = screen.getByLabelText(/title/i);
-            const contentTextarea = screen.getByLabelText(/code content/i);
-            const tagInput = screen.getByRole('textbox', { name: /tags/i });
             const submitButton = screen.getByRole('button', { name: /create snippet/i });
 
-            await user.type(titleInput, 'Test Snippet');
-            await user.type(contentTextarea, 'console.log("test");');
-            await user.type(tagInput, 'javascript{Enter}');
+            await populateRequiredFields(user);
             await user.click(submitButton);
 
             expect(global.fetch).toHaveBeenCalledWith('/api/snippets', {
@@ -184,6 +264,7 @@ describe('SnippetForm Component', () => {
                 body: JSON.stringify({
                     title: 'Test Snippet',
                     content: 'console.log("test");',
+                    language: 'javascript',
                     tags: ['javascript']
                 }),
             });
@@ -212,14 +293,9 @@ describe('SnippetForm Component', () => {
 
             render(<SnippetForm />);
 
-            const titleInput = screen.getByLabelText(/title/i);
-            const contentTextarea = screen.getByLabelText(/code content/i);
-            const tagInput = screen.getByRole('textbox', { name: /tags/i });
             const submitButton = screen.getByRole('button', { name: /create snippet/i });
 
-            await user.type(titleInput, 'Test Snippet');
-            await user.type(contentTextarea, 'console.log("test");');
-            await user.type(tagInput, 'javascript{Enter}');
+            await populateRequiredFields(user);
             await user.click(submitButton);
 
             expect(screen.getByRole('button', { name: /creating.../i })).toBeInTheDocument();
@@ -239,14 +315,9 @@ describe('SnippetForm Component', () => {
             const mockOnError = jest.fn();
             render(<SnippetForm onError={mockOnError} />);
 
-            const titleInput = screen.getByLabelText(/title/i);
-            const contentTextarea = screen.getByLabelText(/code content/i);
-            const tagInput = screen.getByRole('textbox', { name: /tags/i });
             const submitButton = screen.getByRole('button', { name: /create snippet/i });
 
-            await user.type(titleInput, 'Test Snippet');
-            await user.type(contentTextarea, 'console.log("test");');
-            await user.type(tagInput, 'javascript{Enter}');
+            await populateRequiredFields(user);
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -285,14 +356,9 @@ describe('SnippetForm Component', () => {
 
             render(<SnippetForm onSuccess={mockOnSuccess} />);
 
-            const titleInput = screen.getByLabelText(/title/i);
-            const contentTextarea = screen.getByLabelText(/code content/i);
-            const tagInput = screen.getByRole('textbox', { name: /tags/i });
             const submitButton = screen.getByRole('button', { name: /create snippet/i });
 
-            await user.type(titleInput, 'Test Snippet');
-            await user.type(contentTextarea, 'console.log("test");');
-            await user.type(tagInput, 'javascript{Enter}');
+            await populateRequiredFields(user);
             await user.click(submitButton);
 
             await waitFor(() => {

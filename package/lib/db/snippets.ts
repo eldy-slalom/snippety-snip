@@ -3,16 +3,18 @@
  * Handles all database operations for snippets
  */
 
-import { getDatabase } from "./client";
-import { TagService } from "./tags";
+import { LANGUAGE_IDS } from "@/constants/languages";
+import type { LanguageId } from "@/constants/languages";
 import type { Tag } from "@/types/tag";
 import { normalizeLineEndings } from "../../utils/snippet-validators";
 import type {
   CreateSnippetData as MVPCreateSnippetData,
   Snippet as MVPSnippet,
 } from "../../types/snippet";
+import { getDatabase } from "./client";
+import { TagService } from "./tags";
 
-export interface Snippet {
+interface SnippetRow {
   id: number;
   title: string;
   content: string;
@@ -22,21 +24,43 @@ export interface Snippet {
   updated_at: string;
 }
 
+export interface Snippet extends Omit<SnippetRow, "language"> {
+  language: LanguageId;
+}
+
 export interface SnippetWithTags extends Omit<Snippet, "tags"> {
   tagList: Tag[];
+}
+
+const LANGUAGE_ID_LOOKUP: readonly string[] = LANGUAGE_IDS as readonly string[];
+
+function normalizeLanguage(language: string | LanguageId): LanguageId {
+  const candidate = language.toLowerCase();
+  if (LANGUAGE_ID_LOOKUP.includes(candidate)) {
+    return candidate as LanguageId;
+  }
+
+  throw new Error(`Unsupported language identifier: ${language}`);
+}
+
+function mapSnippet(snippet: SnippetRow): Snippet {
+  return {
+    ...snippet,
+    language: normalizeLanguage(snippet.language),
+  };
 }
 
 export interface CreateSnippetData {
   title: string;
   content: string;
-  language: string;
+  language: LanguageId;
   tags: string[];
 }
 
 export interface UpdateSnippetData {
   title?: string;
   content?: string;
-  language?: string;
+  language?: LanguageId;
   tags?: string[];
 }
 
@@ -51,10 +75,10 @@ export class SnippetService {
     const db = getDatabase();
     const snippets = db
       .prepare("SELECT * FROM snippets ORDER BY updated_at DESC")
-      .all() as Snippet[];
+      .all() as SnippetRow[];
 
     return snippets.map((snippet) => ({
-      ...snippet,
+      ...mapSnippet(snippet),
       tagList: TagService.getTagsBySnippetId(snippet.id),
     }));
   }
@@ -66,14 +90,14 @@ export class SnippetService {
     const db = getDatabase();
     const snippet = db
       .prepare("SELECT * FROM snippets WHERE id = ?")
-      .get(id) as Snippet | undefined;
+      .get(id) as SnippetRow | undefined;
 
     if (!snippet) {
       return null;
     }
 
     return {
-      ...snippet,
+      ...mapSnippet(snippet),
       tagList: TagService.getTagsBySnippetId(snippet.id),
     };
   }
@@ -86,7 +110,12 @@ export class SnippetService {
     const stmt = db.prepare(
       "INSERT INTO snippets (title, content, language, tags) VALUES (?, ?, ?, ?)"
     );
-    const result = stmt.run(data.title, data.content, data.language, "");
+    const result = stmt.run(
+      data.title,
+      data.content,
+      normalizeLanguage(data.language),
+      ""
+    );
     const snippetId = result.lastInsertRowid as number;
 
     // Associate tags
@@ -122,7 +151,7 @@ export class SnippetService {
     }
     if (data.language !== undefined) {
       updates.push("language = ?");
-      values.push(data.language);
+      values.push(normalizeLanguage(data.language));
     }
 
     if (updates.length > 0) {
@@ -159,11 +188,13 @@ export class SnippetService {
     // Search for snippets that contain any of the provided tags
     const placeholders = tags.map(() => "tags LIKE ?").join(" OR ");
     const searchTerms = tags.map((tag) => `%${tag}%`);
-    return db
+    const rows = db
       .prepare(
         `SELECT * FROM snippets WHERE ${placeholders} ORDER BY updated_at DESC`
       )
-      .all(...searchTerms) as Snippet[];
+      .all(...searchTerms) as SnippetRow[];
+
+    return rows.map(mapSnippet);
   }
 
   /**
@@ -171,11 +202,13 @@ export class SnippetService {
    */
   static filterByLanguage(language: string): Snippet[] {
     const db = getDatabase();
-    return db
+    const rows = db
       .prepare(
         "SELECT * FROM snippets WHERE language = ? ORDER BY updated_at DESC"
       )
-      .all(language) as Snippet[];
+      .all(language) as SnippetRow[];
+
+    return rows.map(mapSnippet);
   }
 
   /**
@@ -203,11 +236,10 @@ export class SnippetService {
     `);
 
     try {
-      // Use default language='other', but accept tags from data
       const result = stmt.run(
         data.title,
         normalizedContent,
-        "other",
+        normalizeLanguage(data.language),
         tagsString,
         now,
         now
@@ -215,13 +247,15 @@ export class SnippetService {
 
       // Fetch the created snippet
       const selectStmt = db.prepare("SELECT * FROM snippets WHERE id = ?");
-      const snippet = selectStmt.get(result.lastInsertRowid) as
-        | Snippet
+      const snippetRow = selectStmt.get(result.lastInsertRowid) as
+        | SnippetRow
         | undefined;
 
-      if (!snippet) {
+      if (!snippetRow) {
         throw new Error("Failed to retrieve created snippet");
       }
+
+      const snippet = mapSnippet(snippetRow);
 
       // Return full snippet with tags
       return {
@@ -246,19 +280,24 @@ export class SnippetService {
    */
   static getAllBasicSnippets(): MVPSnippet[] {
     const db = getDatabase();
-    const stmt = db.prepare("SELECT * FROM snippets ORDER BY created_at DESC");
-    const snippets = stmt.all() as Snippet[];
+    const stmt = db.prepare(
+      "SELECT * FROM snippets ORDER BY created_at DESC, id DESC"
+    );
+    const snippetRows = stmt.all() as SnippetRow[];
 
     // Return snippets with all fields including language and tags
-    return snippets.map((snippet) => ({
-      id: snippet.id,
-      title: snippet.title,
-      content: snippet.content,
-      language: snippet.language,
-      tags: snippet.tags,
-      created_at: snippet.created_at,
-      updated_at: snippet.updated_at,
-    }));
+    return snippetRows.map((snippetRow) => {
+      const snippet = mapSnippet(snippetRow);
+      return {
+        id: snippet.id,
+        title: snippet.title,
+        content: snippet.content,
+        language: snippet.language,
+        tags: snippet.tags,
+        created_at: snippet.created_at,
+        updated_at: snippet.updated_at,
+      };
+    });
   }
 
   /**
@@ -267,11 +306,13 @@ export class SnippetService {
   static getBasicSnippetById(id: number): MVPSnippet | null {
     const db = getDatabase();
     const stmt = db.prepare("SELECT * FROM snippets WHERE id = ?");
-    const snippet = stmt.get(id) as Snippet | undefined;
+    const snippetRow = stmt.get(id) as SnippetRow | undefined;
 
-    if (!snippet) {
+    if (!snippetRow) {
       return null;
     }
+
+    const snippet = mapSnippet(snippetRow);
 
     // Return full snippet with all fields
     return {

@@ -2,6 +2,8 @@
  * TypeScript types for snippet entities and related data structures
  */
 
+import type { LanguageId } from "@/constants/languages";
+
 /**
  * Core snippet entity as stored in the database
  */
@@ -9,7 +11,7 @@ export interface Snippet {
   id: number;
   title: string;
   content: string;
-  language: string;
+  language: LanguageId;
   tags: string;
   created_at: string; // ISO 8601 date string
   updated_at: string; // ISO 8601 date string
@@ -21,7 +23,8 @@ export interface Snippet {
 export interface CreateSnippetData {
   title: string;
   content: string;
-  tags?: string[]; // Optional tags array
+  language: LanguageId;
+  tags: string[];
 }
 
 /**
@@ -53,6 +56,7 @@ export interface ApiErrorResponse {
 export interface SnippetFormData {
   title: string;
   content: string;
+  language: LanguageId | "";
   tags: string[]; // Tags array
 }
 
@@ -62,5 +66,6 @@ export interface SnippetFormData {
 export interface SnippetFormErrors {
   title?: string;
   content?: string;
+  language?: string;
   tags?: string;
 }
