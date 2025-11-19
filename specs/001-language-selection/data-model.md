@@ -3,6 +3,7 @@
 ## Entities
 
 ### Snippet
+
 - **Description**: Persisted code snippet created by the user.
 - **Attributes**:
   - `id` (string, UUID) – unique identifier.
@@ -17,6 +18,7 @@
   - On update, language must remain within supported list.
 
 ### LanguageOption (derived)
+
 - **Description**: Controlled vocabulary entry used by UI and validation.
 - **Attributes**:
   - `id` (string) – canonical identifier (lowercase, hyphenated as needed).
@@ -26,10 +28,12 @@
   - Exposed as immutable set packaged with application code.
 
 ## Relationships
+
 - Snippet → LanguageOption: many-to-one logical relationship enforced by application validation (no separate table).
 - Snippet ↔ Tag: existing many-to-many relationship unchanged by this feature.
 
 ## State Transitions
+
 1. **Draft (form)**: `language` unset until user selects an option.
 2. **Ready to Save**: `language` selected; client validation passes.
 3. **Persisted**: Snippet stored with selected `language`; downstream views surface value.

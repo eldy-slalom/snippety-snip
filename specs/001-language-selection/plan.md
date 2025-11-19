@@ -29,7 +29,7 @@ Require snippet creators to pick a language from a predefined list so downstream
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 - **TDD Commitment**: Plan includes new tests for dropdown rendering, validation, and API enforcement before implementation begins – PASS.
 - **Quality Standards**: Reuses existing form/components structure, avoids new dependencies, adheres to TypeScript strict mode – PASS.
@@ -52,6 +52,7 @@ Updates to existing contract: `specs/002-snippet-creation/contracts/create-snipp
 ```
 
 ### Source Code (repository root)
+
 <!--
   ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
   for this feature. Delete unused options and expand the chosen structure with
@@ -100,7 +101,7 @@ package/jest.setup.ts
 > **Fill ONLY if Constitution Check has violations that must be justified**
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| _None_ | _N/A_ | _N/A_ |
+| --------- | ---------- | ------------------------------------ |
+| _None_    | _N/A_      | _N/A_                                |
 
 No additional complexity exemptions required; plan adheres to constitution defaults.

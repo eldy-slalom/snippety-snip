@@ -1,12 +1,14 @@
 # Quickstart: Assign Snippet Language Dropdown
 
 1. **Sync branch**
+
    ```powershell
    git checkout 001-language-selection
    git pull
    ```
 
 2. **Run database init (if first time)**
+
    ```powershell
    cd package
    npm install
@@ -14,12 +16,14 @@
    ```
 
 3. **Start development server**
+
    ```powershell
    cd package
    npm run dev
    ```
 
 4. **Manual test flow**
+
    - Navigate to `http://localhost:3000/snippets/new`.
    - Verify the language dropdown shows all supported languages alphabetically with no default.
    - Attempt to submit without selecting a language and confirm validation blocks the request.

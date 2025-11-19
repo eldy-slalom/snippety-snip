@@ -19,8 +19,8 @@
 
 **Purpose**: Establish shared assets required by all subsequent work.
 
-- [ ] T001 Create shared language options constant exporting sorted id/label pairs in `package/constants/languages.ts`
-- [ ] T002 Update snippet domain types to include `LanguageId` union and require language on create/update in `package/types/snippet.ts`
+- [x] T001 Create shared language options constant exporting sorted id/label pairs in `package/constants/languages.ts`
+- [x] T002 Update snippet domain types to include `LanguageId` union and require language on create/update in `package/types/snippet.ts`
 
 ---
 
@@ -28,9 +28,9 @@
 
 **Purpose**: Core validation and persistence changes that must exist before story work.
 
-- [ ] T003 Integrate language constant into create/update validation helpers with explicit error messaging in `package/utils/snippet-validators.ts`
-- [ ] T004 Ensure `SnippetService` create/update paths enforce the required language and persist controlled ids in `package/lib/db/snippets.ts`
-- [ ] T005 Update request schema enum for language options in `specs/002-snippet-creation/contracts/create-snippet.yaml`
+- [x] T003 Integrate language constant into create/update validation helpers with explicit error messaging in `package/utils/snippet-validators.ts`
+- [x] T004 Ensure `SnippetService` create/update paths enforce the required language and persist controlled ids in `package/lib/db/snippets.ts`
+- [x] T005 Update request schema enum for language options in `specs/002-snippet-creation/contracts/create-snippet.yaml`
 
 **Checkpoint**: Validation, persistence, and contract all recognize the controlled language list.
 

@@ -5,7 +5,7 @@
 **Status**: Draft  
 **Input**: User description: "US-1.2: Assign a programming language to a snippet. As a developer I want to select a programming language from a dropdown when creating a snippet so that the system can apply appropriate syntax highlighting and categorization. Users must select a language from a pre-populated dropdown list that includes common programming languages (JavaScript, TypeScript, Python, Java, C++, C#, Go, Rust, Ruby, PHP, Swift, Kotlin, HTML, CSS, SQL, JSON, YAML, Markdown, Shell/Bash, PowerShell, and \"Other\"). The list is sorted alphabetically and requires a selection (no default). Acceptance Criteria: Language dropdown displays all supported languages in alphabetical order; Language selection is required; No default language is pre-selected; Validation prevents submission without language selection."
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Choose language during snippet creation (Priority: P1)
 
@@ -29,7 +29,7 @@ A developer drafting a new snippet selects a programming language from the provi
 - User filters input with keyboard navigation only: the dropdown supports typing the first letter of a language and moves focus accordingly.
 - User tries to submit immediately without interacting with the dropdown: validation surfaces inline guidance without erasing other inputs.
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -39,12 +39,12 @@ A developer drafting a new snippet selects a programming language from the provi
 - **FR-004**: Upon successful submission, the system MUST persist the selected language with the snippet record and surface that value in subsequent list or detail views that confirm creation.
 - **FR-005**: The language dropdown MUST be usable with keyboard-only navigation and announce its label and validation state to assistive technologies.
 
-### Key Entities *(include if feature involves data)*
+### Key Entities _(include if feature involves data)_
 
 - **Snippet Draft**: In-progress snippet content captured on the create form, including title, code body, tags, and a required language attribute that must be set before submission.
 - **Language Option**: Member of the supported language set (JavaScript, TypeScript, Python, Java, C++, C#, Go, Rust, Ruby, PHP, Swift, Kotlin, HTML, CSS, SQL, JSON, YAML, Markdown, Shell/Bash, PowerShell, Other) stored as display label plus stable identifier used when persisting snippets.
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 
