@@ -44,16 +44,16 @@
 
 ### Tests for User Story 1 (write first)
 
-- [ ] T006 [P] [US1] Extend form tests for dropdown rendering, alphabetical order, and required validation in `package/components/snippets/__tests__/SnippetForm.test.tsx`
-- [ ] T007 [P] [US1] Add API handler tests covering missing-language 400 response and successful persistence in `package/app/api/snippets/__tests__/route.test.ts`
-- [ ] T008 [P] [US1] Update database service tests to assert language is stored and returned in `package/lib/db/__tests__/snippets.test.ts`
+- [x] T006 [P] [US1] Extend form tests for dropdown rendering, alphabetical order, and required validation in `package/components/snippets/__tests__/SnippetForm.test.tsx`
+- [x] T007 [P] [US1] Add API handler tests covering missing-language 400 response and successful persistence in `package/app/api/snippets/__tests__/route.test.ts`
+- [x] T008 [P] [US1] Update database service tests to assert language is stored and returned in `package/lib/db/__tests__/snippets.test.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T009 [US1] Render native `<select>` with empty default, sorted options, and inline error messaging in `package/components/snippets/SnippetForm.tsx`
-- [ ] T010 [US1] Initialize snippet creation page state without a default language and submit selected value in `package/app/snippets/new/page.tsx`
-- [ ] T011 [US1] Wire API route to reuse validators and map language constants before calling service in `package/app/api/snippets/route.ts`
-- [ ] T012 [US1] Surface persisted language in snippet detail and confirmation views within `package/components/snippets/SnippetView.tsx`
+- [x] T009 [US1] Render native `<select>` with empty default, sorted options, and inline error messaging in `package/components/snippets/SnippetForm.tsx`
+- [x] T010 [US1] Initialize snippet creation page state without a default language and submit selected value in `package/app/snippets/new/page.tsx`
+- [x] T011 [US1] Wire API route to reuse validators and map language constants before calling service in `package/app/api/snippets/route.ts`
+- [x] T012 [US1] Surface persisted language in snippet detail and confirmation views within `package/components/snippets/SnippetView.tsx`
 
 **Checkpoint**: User Story 1 is fully functional and independently testable end-to-end.
 
@@ -63,8 +63,8 @@
 
 **Purpose**: Final verification and documentation touchpoints.
 
-- [ ] T013 Execute automated checks (`npm test`, `npm run lint`) from `package/` per quickstart guidance
-- [ ] T014 Follow manual quickstart flow to validate dropdown UX and documentation in `specs/001-language-selection/quickstart.md`
+- [x] T013 Execute automated checks (`npm test`, `npm run lint`) from `package/` per quickstart guidance
+- [x] T014 Follow manual quickstart flow to validate dropdown UX and documentation in `specs/001-language-selection/quickstart.md`
 
 ---
 
