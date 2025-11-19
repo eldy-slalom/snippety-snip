@@ -36,21 +36,16 @@ const languageIdToShiki: Record<string, string> = {
 };
 
 /**
- * SnippetPreview component - displays a truncated code snippet with syntax highlighting
+ * SnippetPreview component - displays code snippet with syntax highlighting
  * Used in the snippet list view
  */
 export function SnippetPreview({ content, language }: SnippetPreviewProps) {
-  // Truncate content for preview (first 120 characters)
-  const previewContent = content.length > 120
-    ? content.slice(0, 120) + '...'
-    : content;
-
   // Map language ID to Shiki language name
   const shikiLanguage = languageIdToShiki[language] || 'plaintext';
 
   return (
     <div style={{ marginBottom: '8px' }}>
-      <CodeBlock content={previewContent} language={shikiLanguage} preview={true} />
+      <CodeBlock content={content} language={shikiLanguage} preview={true} />
     </div>
   );
 }
