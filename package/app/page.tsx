@@ -1,7 +1,8 @@
 import Link from 'next/link';
+import { LANGUAGE_LABEL_BY_ID } from '../constants/languages';
+import TagList from '../components/snippets/TagList';
 import { SnippetService } from '../lib/db/snippets';
 import type { Snippet as SnippetRecord } from '../types/snippet';
-import TagList from '../components/snippets/TagList';
 
 export default async function Home() {
   // Fetch all snippets with tags
@@ -25,10 +26,14 @@ export default async function Home() {
             {snippets.map((snippet: SnippetRecord) => {
               // Parse tags from comma-separated string
               const tags = snippet.tags ? snippet.tags.split(',').map((tag: string) => tag.trim()) : [];
+              const languageLabel = LANGUAGE_LABEL_BY_ID[snippet.language] ?? snippet.language;
 
               return (
                 <div key={snippet.id} className="card snippet-card">
-                  <h2 style={{ marginBottom: '8px', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>{snippet.title}</h2>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                    <h2 style={{ marginBottom: '0px', wordBreak: 'break-word', overflowWrap: 'anywhere', flex: '1 1 auto' }}>{snippet.title}</h2>
+                    <span className="language-badge">{languageLabel}</span>
+                  </div>
 
                   {/* Display tags */}
                   {tags.length > 0 && (
