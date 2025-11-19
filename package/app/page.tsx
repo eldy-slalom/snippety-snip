@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { SnippetService } from '../lib/db/snippets';
+import type { Snippet as SnippetRecord } from '../types/snippet';
 import TagList from '../components/snippets/TagList';
 
 export default async function Home() {
@@ -24,7 +25,7 @@ export default async function Home() {
           </div>
         ) : (
           <div className="snippet-list">
-            {snippets.map((snippet: any) => {
+            {snippets.map((snippet: SnippetRecord) => {
               // Parse tags from comma-separated string
               const tags = snippet.tags ? snippet.tags.split(',').map((tag: string) => tag.trim()) : [];
 

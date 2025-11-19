@@ -7,6 +7,7 @@ import type { NextRequest } from "next/server";
 import { POST, GET } from "../route";
 import { SnippetService } from "../../../../lib/db/snippets";
 import { getDatabase, closeDatabase } from "../../../../lib/db/client";
+import Database from "better-sqlite3";
 import { join } from "path";
 import { unlinkSync, existsSync, mkdirSync } from "fs";
 
@@ -46,8 +47,7 @@ jest.mock("next/server", () => {
 
 // Mock the database path for tests
 jest.mock("../../../../lib/db/client", () => {
-  const Database = require("better-sqlite3");
-  let testDb: any = null;
+  let testDb: Database.Database | null = null;
 
   return {
     getDatabase: () => {

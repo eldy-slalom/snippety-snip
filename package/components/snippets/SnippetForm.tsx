@@ -15,7 +15,12 @@ import {
     validateTags,
 } from "../../utils/snippet-validators";
 import TagInput from "./TagInput";
-import type { SnippetFormData, SnippetFormErrors } from "../../types/snippet";
+import type {
+    ApiErrorResponse,
+    SnippetFormData,
+    SnippetFormErrors,
+    ValidationError,
+} from "../../types/snippet";
 
 interface SnippetFormProps {
     onSuccess?: () => void;
@@ -133,13 +138,10 @@ export default function SnippetForm({ onSuccess, onError }: SnippetFormProps) {
 
         // Check for validation errors
         if (hasValidationErrors) {
-            console.log('Form has validation errors');
             return;
         }
 
         setIsSubmitting(true);
-
-        console.log('Submitting form data:', formData);
 
         try {
             const response = await fetch("/api/snippets", {
@@ -151,12 +153,18 @@ export default function SnippetForm({ onSuccess, onError }: SnippetFormProps) {
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
+                const errorData = (await response.json()) as Partial<ApiErrorResponse>;
 
-                // Show detailed error message if available
-                let errorMessage = errorData.error || "Failed to create snippet";
-                if (errorData.details && errorData.details.length > 0) {
-                    errorMessage += ": " + errorData.details.map((d: any) => d.message).join(", ");
+                let errorMessage = errorData.error ?? "Failed to create snippet";
+
+                if (Array.isArray(errorData.details) && errorData.details.length > 0) {
+                    const detailMessages = errorData.details
+                        .map((detail: ValidationError) => detail.message)
+                        .filter((message): message is string => Boolean(message));
+
+                    if (detailMessages.length > 0) {
+                        errorMessage = `${errorMessage}: ${detailMessages.join(", ")}`;
+                    }
                 }
 
                 throw new Error(errorMessage);

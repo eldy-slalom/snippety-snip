@@ -12,6 +12,7 @@ const TEST_DB_PATH = join(process.cwd(), "data", "test-tags.db");
 
 describe("TagService", () => {
   beforeEach(() => {
+    process.env.SNIPPETY_DB_PATH = TEST_DB_PATH;
     // Clean up test database before each test
     if (existsSync(TEST_DB_PATH)) {
       closeDatabase();
@@ -71,6 +72,7 @@ describe("TagService", () => {
     if (existsSync(TEST_DB_PATH)) {
       unlinkSync(TEST_DB_PATH);
     }
+    delete process.env.SNIPPETY_DB_PATH;
   });
 
   describe("createOrFindTag", () => {

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { LANGUAGE_LABEL_BY_ID } from '@/constants/languages';
 import { Snippet } from '@/types/snippet';
 import { CodeBlock } from './CodeBlock';
 import styles from './SnippetView.module.css';
@@ -25,15 +26,21 @@ export interface SnippetViewProps {
  * ```tsx
  * <SnippetView snippet={snippetData} />
  * ```
- */export function SnippetView({ snippet }: SnippetViewProps) {
-    const tags = snippet.tags.split(',').map(tag => tag.trim());
+ */
+export function SnippetView({ snippet }: SnippetViewProps) {
+    const tags = snippet.tags
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter((tag) => tag.length > 0);
+    const languageLabel =
+        LANGUAGE_LABEL_BY_ID[snippet.language] ?? snippet.language;
 
     return (
         <div className={styles.snippetView}>
             <div className={styles.header}>
                 <h1 className={styles.title}>{snippet.title}</h1>
                 <div className={styles.metadata}>
-                    <span className={styles.language}>{snippet.language}</span>
+                    <span className={styles.language}>{languageLabel}</span>
                     <span className={styles.date}>
                         Updated: {new Date(snippet.updated_at).toLocaleDateString()}
                     </span>

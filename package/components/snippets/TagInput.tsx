@@ -66,14 +66,11 @@ export default function TagInput({ tags, onChange }: TagInputProps) {
 
   // Add tag handler
   const addTag = (tagName: string) => {
-    console.log('addTag called with:', tagName);
-    console.log('Current tags:', tags);
     setError(null);
 
     // Validate tag count
     const countValidation = validateTagCount(tags.length + 1);
     if (!countValidation.valid) {
-      console.log('Tag count validation failed:', countValidation.error);
       setError(countValidation.error || 'Maximum tags reached');
       return;
     }
@@ -81,23 +78,19 @@ export default function TagInput({ tags, onChange }: TagInputProps) {
     // Validate tag format
     const formatValidation = validateTagFormat(tagName);
     if (!formatValidation.valid) {
-      console.log('Tag format validation failed:', formatValidation.error);
       setError(formatValidation.error || 'Invalid tag format');
       return;
     }
 
     const normalized = normalizeTagName(tagName);
-    console.log('Normalized tag name:', normalized);
 
     // Check for duplicates
     if (isDuplicateTag(normalized, tags)) {
-      console.log('Duplicate tag detected');
       setError('This tag is already added');
       return;
     }
 
     // Add tag
-    console.log('Adding tag to array, calling onChange with:', [...tags, normalized]);
     onChange([...tags, normalized]);
     setInputValue('');
     setSuggestions([]);
@@ -113,15 +106,11 @@ export default function TagInput({ tags, onChange }: TagInputProps) {
 
   // Handle Enter key
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    console.log('Key pressed:', e.key, 'Input value:', inputValue);
     if (e.key === 'Enter') {
       e.preventDefault();
       e.stopPropagation(); // Prevent form submission
       if (inputValue.trim()) {
-        console.log('Calling addTag from Enter key');
         addTag(inputValue);
-      } else {
-        console.log('Input value is empty after trim');
       }
     }
   };

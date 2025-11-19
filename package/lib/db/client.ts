@@ -1,21 +1,39 @@
 import Database from "better-sqlite3";
-import { join, dirname } from "path";
+import { join, dirname, isAbsolute } from "path";
 import { readFileSync, mkdirSync } from "fs";
 
-const DB_PATH = join(process.cwd(), "data", "snippets.db");
-
 let db: Database.Database | null = null;
+let currentDbPath: string | null = null;
+
+function resolveDatabasePath(): string {
+  const override = process.env.SNIPPETY_DB_PATH;
+
+  if (override && override.trim().length > 0) {
+    return isAbsolute(override) ? override : join(process.cwd(), override);
+  }
+
+  return join(process.cwd(), "data", "snippets.db");
+}
 
 /**
  * Get or create the SQLite database instance
  * @returns Database instance
  */
 export function getDatabase(): Database.Database {
+  const resolvedPath = resolveDatabasePath();
+
+  if (db && currentDbPath !== resolvedPath) {
+    db.close();
+    db = null;
+    currentDbPath = null;
+  }
+
   if (!db) {
     // Ensure data directory exists
-    mkdirSync(dirname(DB_PATH), { recursive: true });
+    mkdirSync(dirname(resolvedPath), { recursive: true });
 
-    db = new Database(DB_PATH);
+    db = new Database(resolvedPath);
+    currentDbPath = resolvedPath;
     db.pragma("journal_mode = WAL"); // Enable Write-Ahead Logging for better performance
   }
   return db;
@@ -28,6 +46,7 @@ export function closeDatabase(): void {
   if (db) {
     db.close();
     db = null;
+    currentDbPath = null;
   }
 }
 
@@ -46,6 +65,5 @@ export function runMigration(migrationPath: string): void {
  * @returns Path to the database file
  */
 export function getDatabasePath(): string {
-  return DB_PATH;
+  return currentDbPath ?? resolveDatabasePath();
 }
-

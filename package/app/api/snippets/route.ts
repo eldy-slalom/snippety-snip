@@ -22,8 +22,6 @@ export async function POST(
     // Parse request body
     const body = (await request.json()) as CreateSnippetData;
 
-    console.log("Received snippet data:", JSON.stringify(body, null, 2));
-
     // Validate input data
     const validationErrors = validateSnippetData({
       title: body.title,
@@ -33,7 +31,6 @@ export async function POST(
     });
 
     if (validationErrors.length > 0) {
-      console.log("Validation errors:", validationErrors);
       return NextResponse.json(
         {
           error: "Validation failed",

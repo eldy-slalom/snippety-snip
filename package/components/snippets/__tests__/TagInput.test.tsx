@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TagInput from '../TagInput';
 
@@ -142,7 +142,6 @@ describe('TagInput', () => {
     });
 
     it('should not add more than 5 tags', async () => {
-      const user = userEvent.setup();
       const tags = ['tag1', 'tag2', 'tag3', 'tag4', 'tag5'];
       render(<TagInput tags={tags} onChange={mockOnChange} />);
 
@@ -329,7 +328,6 @@ describe('TagInput', () => {
     });
 
     it('should be keyboard navigable', async () => {
-      const user = userEvent.setup();
       render(<TagInput tags={['javascript']} onChange={mockOnChange} />);
 
       const input = screen.getByRole('textbox');

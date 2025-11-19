@@ -1,20 +1,21 @@
 /**
  * Integration tests for GET /api/tags endpoint logic
  * TDD Red Phase - Tests written before implementation
- * 
+ *
  * Note: These tests verify TagService behavior which is called by the API endpoint.
  * The route handler is a thin wrapper around TagService.
  */
 
-import { TagService } from '@/lib/db/tags';
-import { getDatabase, closeDatabase } from '@/lib/db/client';
-import { join } from 'path';
-import { unlinkSync, existsSync, mkdirSync } from 'fs';
+import { TagService } from "@/lib/db/tags";
+import { getDatabase, closeDatabase } from "@/lib/db/client";
+import { join } from "path";
+import { unlinkSync, existsSync, mkdirSync } from "fs";
 
-const TEST_DB_PATH = join(process.cwd(), 'data', 'test-api-tags.db');
+const TEST_DB_PATH = join(process.cwd(), "data", "test-api-tags.db");
 
-describe('GET /api/tags - TagService Integration', () => {
+describe("GET /api/tags - TagService Integration", () => {
   beforeEach(() => {
+    process.env.SNIPPETY_DB_PATH = TEST_DB_PATH;
     // Clean up test database before each test
     if (existsSync(TEST_DB_PATH)) {
       closeDatabase();
@@ -22,11 +23,11 @@ describe('GET /api/tags - TagService Integration', () => {
     }
 
     // Ensure data directory exists
-    mkdirSync(join(process.cwd(), 'data'), { recursive: true });
+    mkdirSync(join(process.cwd(), "data"), { recursive: true });
 
     // Initialize test database with schema
     const db = getDatabase();
-    
+
     db.exec(`
       CREATE TABLE IF NOT EXISTS snippets (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -59,13 +60,13 @@ describe('GET /api/tags - TagService Integration', () => {
     `);
 
     // Seed database with test tags
-    TagService.createOrFindTag('javascript');
-    TagService.createOrFindTag('java');
-    TagService.createOrFindTag('typescript');
-    TagService.createOrFindTag('react');
-    TagService.createOrFindTag('react-native');
-    TagService.createOrFindTag('vue');
-    TagService.createOrFindTag('angular');
+    TagService.createOrFindTag("javascript");
+    TagService.createOrFindTag("java");
+    TagService.createOrFindTag("typescript");
+    TagService.createOrFindTag("react");
+    TagService.createOrFindTag("react-native");
+    TagService.createOrFindTag("vue");
+    TagService.createOrFindTag("angular");
   });
 
   afterEach(() => {
@@ -73,85 +74,91 @@ describe('GET /api/tags - TagService Integration', () => {
     if (existsSync(TEST_DB_PATH)) {
       unlinkSync(TEST_DB_PATH);
     }
+    delete process.env.SNIPPETY_DB_PATH;
   });
 
-  describe('successful requests', () => {
-    it('should return tags matching prefix', () => {
-      const data = TagService.getTagsByPrefix('java');
+  describe("successful requests", () => {
+    it("should return tags matching prefix", () => {
+      const data = TagService.getTagsByPrefix("java");
 
       expect(Array.isArray(data)).toBe(true);
       expect(data).toHaveLength(2);
-      expect(data.map((t: any) => t.name)).toContain('javascript');
-      expect(data.map((t: any) => t.name)).toContain('java');
+      const tagNames = data.map((tag) => tag.name);
+      expect(tagNames).toContain("javascript");
+      expect(tagNames).toContain("java");
     });
 
-    it('should be case-insensitive', () => {
-      const data = TagService.getTagsByPrefix('JAVA');
+    it("should be case-insensitive", () => {
+      const data = TagService.getTagsByPrefix("JAVA");
 
       expect(data).toHaveLength(2);
-      expect(data.map((t: any) => t.name)).toContain('javascript');
-      expect(data.map((t: any) => t.name)).toContain('java');
+      const tagNames = data.map((tag) => tag.name);
+      expect(tagNames).toContain("javascript");
+      expect(tagNames).toContain("java");
     });
 
-    it('should return empty array if no matches', () => {
-      const data = TagService.getTagsByPrefix('golang');
+    it("should return empty array if no matches", () => {
+      const data = TagService.getTagsByPrefix("golang");
 
       expect(Array.isArray(data)).toBe(true);
       expect(data).toHaveLength(0);
     });
 
-    it('should return empty array for empty query', () => {
-      const data = TagService.getTagsByPrefix('');
+    it("should return empty array for empty query", () => {
+      const data = TagService.getTagsByPrefix("");
 
       expect(Array.isArray(data)).toBe(true);
       expect(data).toHaveLength(0);
     });
 
-    it('should return tags ordered alphabetically', () => {
-      const data = TagService.getTagsByPrefix('react');
+    it("should return tags ordered alphabetically", () => {
+      const data = TagService.getTagsByPrefix("react");
 
       expect(data.length).toBeGreaterThan(0);
       // Verify alphabetical ordering
       for (let i = 0; i < data.length - 1; i++) {
-        expect(data[i].name.localeCompare(data[i + 1].name)).toBeLessThanOrEqual(0);
+        expect(
+          data[i].name.localeCompare(data[i + 1].name)
+        ).toBeLessThanOrEqual(0);
       }
     });
 
-    it('should limit results to 8 tags', () => {
+    it("should limit results to 8 tags", () => {
       // Add more tags to test limit
       for (let i = 0; i < 10; i++) {
         TagService.createOrFindTag(`tag${i}`);
       }
 
-      const data = TagService.getTagsByPrefix('tag');
+      const data = TagService.getTagsByPrefix("tag");
 
       expect(data.length).toBeLessThanOrEqual(8);
     });
 
-    it('should return tag objects with correct structure', () => {
-      const data = TagService.getTagsByPrefix('vue');
+    it("should return tag objects with correct structure", () => {
+      const data = TagService.getTagsByPrefix("vue");
 
       expect(data).toHaveLength(1);
-      expect(data[0]).toHaveProperty('id');
-      expect(data[0]).toHaveProperty('name');
-      expect(data[0]).toHaveProperty('created_at');
-      expect(typeof data[0].id).toBe('number');
-      expect(typeof data[0].name).toBe('string');
-      expect(typeof data[0].created_at).toBe('string');
+      expect(data[0]).toHaveProperty("id");
+      expect(data[0]).toHaveProperty("name");
+      expect(data[0]).toHaveProperty("created_at");
+      expect(typeof data[0].id).toBe("number");
+      expect(typeof data[0].name).toBe("string");
+      expect(typeof data[0].created_at).toBe("string");
     });
 
-    it('should handle single character prefix', () => {
-      const data = TagService.getTagsByPrefix('r');
+    it("should handle single character prefix", () => {
+      const data = TagService.getTagsByPrefix("r");
 
       expect(data.length).toBeGreaterThan(0);
-      expect(data.map((t: any) => t.name)).toContain('react');
+      const tagNames = data.map((tag) => tag.name);
+      expect(tagNames).toContain("react");
     });
   });
 
-  describe('performance', () => {
-    it('should respond quickly (< 200ms)', () => {
+  describe("performance", () => {
+    it("should respond quickly (< 200ms)", () => {
       const startTime = Date.now();
-      TagService.getTagsByPrefix('java');
+      TagService.getTagsByPrefix("java");
       const duration = Date.now() - startTime;
 
       expect(duration).toBeLessThan(200);

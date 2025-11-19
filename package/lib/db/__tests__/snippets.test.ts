@@ -15,6 +15,7 @@ describe("SnippetService - MVP Functions", () => {
   const defaultLanguage = "javascript";
 
   beforeEach(() => {
+    process.env.SNIPPETY_DB_PATH = TEST_DB_PATH;
     // Clean up test database before each test
     if (existsSync(TEST_DB_PATH)) {
       closeDatabase();
@@ -49,6 +50,7 @@ describe("SnippetService - MVP Functions", () => {
     if (existsSync(TEST_DB_PATH)) {
       unlinkSync(TEST_DB_PATH);
     }
+    delete process.env.SNIPPETY_DB_PATH;
   });
 
   describe("createBasicSnippet", () => {
