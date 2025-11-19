@@ -17,6 +17,7 @@ export function ThemeToggle() {
       onClick={toggleTheme}
       aria-label={label}
       disabled={!isReady}
+      suppressHydrationWarning
     >
       {status}
     </button>

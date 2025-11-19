@@ -12,6 +12,8 @@ export interface CodeBlockProps {
     content: string;
     /** The programming language for syntax highlighting */
     language: string;
+    /** Whether to show in preview mode (hides toolbar) */
+    preview?: boolean;
 }
 
 /**
@@ -31,7 +33,7 @@ export interface CodeBlockProps {
  * ```
  */
 
-export function CodeBlock({ content, language }: CodeBlockProps) {
+export function CodeBlock({ content, language, preview = false }: CodeBlockProps) {
     const { settings, setShowLineNumbers } = useCodeBlockSettings();
     const [highlightedHtml, setHighlightedHtml] = useState<string>('');
     const [isLoading, setIsLoading] = useState(true);
@@ -39,8 +41,15 @@ export function CodeBlock({ content, language }: CodeBlockProps) {
 
     const toggleLineNumbers = () => {
         setShowLineNumbers(!settings.showLineNumbers);
-    }; useEffect(() => {
+    };
+
+    useEffect(() => {
         async function highlightCode() {
+            // Ensure we have a valid theme
+            if (!settings.theme || (settings.theme !== 'dark' && settings.theme !== 'light')) {
+                return;
+            }
+
             setIsLoading(true);
             setError(null);
 
@@ -95,18 +104,20 @@ export function CodeBlock({ content, language }: CodeBlockProps) {
 
     return (
         <div className={styles.codeBlock} role="region" aria-label="Code block">
-            <div className={styles.toolbar}>
-                <button
-                    onClick={toggleLineNumbers}
-                    className={styles.toggleButton}
-                    aria-label="Toggle line numbers"
-                    aria-pressed={settings.showLineNumbers}
-                >
-                    {settings.showLineNumbers ? 'Hide' : 'Show'} Line Numbers
-                </button>
-            </div>
+            {!preview && (
+                <div className={styles.toolbar}>
+                    <button
+                        onClick={toggleLineNumbers}
+                        className={styles.toggleButton}
+                        aria-label="Toggle line numbers"
+                        aria-pressed={settings.showLineNumbers}
+                    >
+                        {settings.showLineNumbers ? 'Hide' : 'Show'} Line Numbers
+                    </button>
+                </div>
+            )}
             <div
-                className={`${styles.codeContent} ${settings.showLineNumbers ? styles.withLineNumbers : ''}`}
+                className={`${styles.codeContent} ${!preview && settings.showLineNumbers ? styles.withLineNumbers : ''}`}
                 dangerouslySetInnerHTML={{ __html: highlightedHtml }}
                 role="code"
                 aria-label={`${language} code snippet`}

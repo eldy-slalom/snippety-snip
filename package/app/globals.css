@@ -363,10 +363,6 @@ body.theme-light .container {
 }
 
 body.theme-light .container,
-body.theme-light .container * {
-  color: #000000 !important;
-}
-
 body.theme-light .container input::placeholder,
 body.theme-light .container textarea::placeholder {
   color: #ffffff !important;

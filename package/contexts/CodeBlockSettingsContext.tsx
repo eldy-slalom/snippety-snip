@@ -1,6 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useTheme } from './ThemeContext';
 
 export interface CodeBlockDisplaySettings {
     showLineNumbers: boolean;
@@ -16,10 +17,18 @@ interface CodeBlockSettingsContextType {
 const CodeBlockSettingsContext = createContext<CodeBlockSettingsContextType | undefined>(undefined);
 
 export function CodeBlockSettingsProvider({ children }: { children: ReactNode }) {
+    const { theme: appTheme, isReady } = useTheme();
     const [settings, setSettings] = useState<CodeBlockDisplaySettings>({
         showLineNumbers: true,
-        theme: 'dark',
+        theme: appTheme,
     });
+
+    // Sync code block theme with app theme
+    useEffect(() => {
+        if (isReady) {
+            setSettings(prev => ({ ...prev, theme: appTheme }));
+        }
+    }, [appTheme, isReady]);
 
     const setShowLineNumbers = (show: boolean) => {
         setSettings(prev => ({ ...prev, showLineNumbers: show }));

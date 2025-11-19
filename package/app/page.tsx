@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { LANGUAGE_LABEL_BY_ID } from '../constants/languages';
 import TagList from '../components/snippets/TagList';
+import { SnippetPreview } from '../components/snippets/SnippetPreview';
 import { SnippetService } from '../lib/db/snippets';
 import type { Snippet as SnippetRecord } from '../types/snippet';
 
@@ -42,11 +43,7 @@ export default async function Home() {
                     </div>
                   )}
 
-                  <pre className="snippet-preview" style={{ marginBottom: '8px', fontFamily: 'var(--font-family-mono)', background: 'var(--color-surface-variant)', padding: '12px', borderRadius: '4px', overflowX: 'auto' }}>
-                    {snippet.content.length > 120
-                      ? snippet.content.slice(0, 120) + '...'
-                      : snippet.content}
-                  </pre>
+                  <SnippetPreview content={snippet.content} language={snippet.language} />
                   <div className="snippet-meta" style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
                     <span>Created: {new Date(snippet.created_at).toLocaleString()}</span>
                     {' | '}
