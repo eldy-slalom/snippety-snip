@@ -25,6 +25,9 @@ describe("SnippetService - MVP Functions", () => {
     // Initialize test database with schema
     const db = getDatabase();
 
+    // Drop table if exists to ensure clean slate
+    db.exec(`DROP TABLE IF EXISTS snippets`);
+
     // Create snippets table with all required fields
     db.exec(`
       CREATE TABLE IF NOT EXISTS snippets (
@@ -51,6 +54,7 @@ describe("SnippetService - MVP Functions", () => {
       const snippetData: CreateSnippetData = {
         title: "Test Snippet",
         content: 'console.log("Hello, World!");',
+        tags: ["test"],
       };
 
       const result = SnippetService.createBasicSnippet(snippetData);
@@ -68,6 +72,7 @@ describe("SnippetService - MVP Functions", () => {
       const snippetData: CreateSnippetData = {
         title: "Line Ending Test",
         content: "Line 1\r\nLine 2\r\nLine 3",
+        tags: ["test"],
       };
 
       const result = SnippetService.createBasicSnippet(snippetData);
@@ -80,6 +85,7 @@ describe("SnippetService - MVP Functions", () => {
         title: "Formatting Test",
         content:
           'function test() {\n\t  if (true) {\n\t    return "hello";\n\t  }\n}',
+        tags: ["test"],
       };
 
       const result = SnippetService.createBasicSnippet(snippetData);
@@ -92,6 +98,7 @@ describe("SnippetService - MVP Functions", () => {
       const snippetData: CreateSnippetData = {
         title: longTitle,
         content: "test content",
+        tags: ["test"],
       };
 
       const result = SnippetService.createBasicSnippet(snippetData);
@@ -105,6 +112,7 @@ describe("SnippetService - MVP Functions", () => {
       const snippetData: CreateSnippetData = {
         title: "Large Content Test",
         content: largeContent,
+        tags: ["test"],
       };
 
       const result = SnippetService.createBasicSnippet(snippetData);
@@ -117,6 +125,7 @@ describe("SnippetService - MVP Functions", () => {
       const snippetData: CreateSnippetData = {
         title: "",
         content: "some content",
+        tags: ["test"],
       };
 
       expect(() => {
@@ -128,6 +137,7 @@ describe("SnippetService - MVP Functions", () => {
       const snippetData: CreateSnippetData = {
         title: "Test Title",
         content: "",
+        tags: ["test"],
       };
 
       expect(() => {
@@ -143,16 +153,21 @@ describe("SnippetService - MVP Functions", () => {
       expect(result).toEqual([]);
     });
 
-    it("should return all snippets ordered by creation date (newest first)", () => {
+    it("should return all snippets ordered by creation date (newest first)", async () => {
       // Create multiple snippets
       const snippet1 = SnippetService.createBasicSnippet({
         title: "First Snippet",
         content: "first content",
+        tags: ["test"],
       });
+
+      // Add small delay to ensure different timestamps
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       const snippet2 = SnippetService.createBasicSnippet({
         title: "Second Snippet",
         content: "second content",
+        tags: ["test"],
       });
 
       const result = SnippetService.getAllBasicSnippets();
@@ -168,6 +183,7 @@ describe("SnippetService - MVP Functions", () => {
       const created = SnippetService.createBasicSnippet({
         title: "Test Snippet",
         content: "test content",
+        tags: ["test"],
       });
 
       const result = SnippetService.getBasicSnippetById(created.id);

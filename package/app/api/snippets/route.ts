@@ -22,9 +22,21 @@ export async function POST(
     // Parse request body
     const body = (await request.json()) as CreateSnippetData;
 
+    console.log("Received snippet data:", JSON.stringify(body, null, 2));
+
     // Validate input data
     const validationErrors = validateSnippetData(body.title, body.content);
+
+    // Validate tags - require at least one tag
+    if (!body.tags || body.tags.length === 0) {
+      validationErrors.push({
+        field: "tags",
+        message: "At least one tag is required",
+      });
+    }
+
     if (validationErrors.length > 0) {
+      console.log("Validation errors:", validationErrors);
       return NextResponse.json(
         {
           error: "Validation failed",

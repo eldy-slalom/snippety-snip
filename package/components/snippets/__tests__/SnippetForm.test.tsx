@@ -168,10 +168,12 @@ describe('SnippetForm Component', () => {
 
             const titleInput = screen.getByLabelText(/title/i);
             const contentTextarea = screen.getByLabelText(/code content/i);
+            const tagInput = screen.getByRole('textbox', { name: /tags/i });
             const submitButton = screen.getByRole('button', { name: /create snippet/i });
 
             await user.type(titleInput, 'Test Snippet');
             await user.type(contentTextarea, 'console.log("test");');
+            await user.type(tagInput, 'javascript{Enter}');
             await user.click(submitButton);
 
             expect(global.fetch).toHaveBeenCalledWith('/api/snippets', {
@@ -181,7 +183,8 @@ describe('SnippetForm Component', () => {
                 },
                 body: JSON.stringify({
                     title: 'Test Snippet',
-                    content: 'console.log("test");'
+                    content: 'console.log("test");',
+                    tags: ['javascript']
                 }),
             });
 
@@ -211,10 +214,12 @@ describe('SnippetForm Component', () => {
 
             const titleInput = screen.getByLabelText(/title/i);
             const contentTextarea = screen.getByLabelText(/code content/i);
+            const tagInput = screen.getByRole('textbox', { name: /tags/i });
             const submitButton = screen.getByRole('button', { name: /create snippet/i });
 
             await user.type(titleInput, 'Test Snippet');
             await user.type(contentTextarea, 'console.log("test");');
+            await user.type(tagInput, 'javascript{Enter}');
             await user.click(submitButton);
 
             expect(screen.getByRole('button', { name: /creating.../i })).toBeInTheDocument();
@@ -236,10 +241,12 @@ describe('SnippetForm Component', () => {
 
             const titleInput = screen.getByLabelText(/title/i);
             const contentTextarea = screen.getByLabelText(/code content/i);
+            const tagInput = screen.getByRole('textbox', { name: /tags/i });
             const submitButton = screen.getByRole('button', { name: /create snippet/i });
 
             await user.type(titleInput, 'Test Snippet');
             await user.type(contentTextarea, 'console.log("test");');
+            await user.type(tagInput, 'javascript{Enter}');
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -280,10 +287,12 @@ describe('SnippetForm Component', () => {
 
             const titleInput = screen.getByLabelText(/title/i);
             const contentTextarea = screen.getByLabelText(/code content/i);
+            const tagInput = screen.getByRole('textbox', { name: /tags/i });
             const submitButton = screen.getByRole('button', { name: /create snippet/i });
 
             await user.type(titleInput, 'Test Snippet');
             await user.type(contentTextarea, 'console.log("test");');
+            await user.type(tagInput, 'javascript{Enter}');
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -306,17 +315,13 @@ describe('SnippetForm Component', () => {
             expect(titleInput.value.length).toBeLessThanOrEqual(100);
         });
 
-        it('should enforce maximum content length', async () => {
-            const user = userEvent.setup();
+        it('should enforce maximum content length', () => {
             render(<SnippetForm />);
 
             const contentTextarea = screen.getByLabelText(/code content/i) as HTMLTextAreaElement;
-            const longContent = 'a'.repeat(50001);
 
-            await user.type(contentTextarea, longContent);
-
-            // Textarea should be limited to 50000 characters by maxLength attribute
-            expect(contentTextarea.value.length).toBeLessThanOrEqual(50000);
+            // The textarea should have maxLength attribute set to 50000
+            expect(contentTextarea.maxLength).toBe(50000);
         });
     });
 });

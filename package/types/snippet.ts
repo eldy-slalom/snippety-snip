@@ -21,6 +21,7 @@ export interface Snippet {
 export interface CreateSnippetData {
   title: string;
   content: string;
+  tags?: string[]; // Optional tags array
 }
 
 /**
@@ -52,6 +53,7 @@ export interface ApiErrorResponse {
 export interface SnippetFormData {
   title: string;
   content: string;
+  tags: string[]; // Tags array
 }
 
 /**
@@ -60,4 +62,5 @@ export interface SnippetFormData {
 export interface SnippetFormErrors {
   title?: string;
   content?: string;
+  tags?: string;
 }

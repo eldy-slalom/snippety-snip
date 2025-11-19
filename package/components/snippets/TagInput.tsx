@@ -66,11 +66,14 @@ export default function TagInput({ tags, onChange }: TagInputProps) {
 
   // Add tag handler
   const addTag = (tagName: string) => {
+    console.log('addTag called with:', tagName);
+    console.log('Current tags:', tags);
     setError(null);
 
     // Validate tag count
     const countValidation = validateTagCount(tags.length + 1);
     if (!countValidation.valid) {
+      console.log('Tag count validation failed:', countValidation.error);
       setError(countValidation.error || 'Maximum tags reached');
       return;
     }
@@ -78,19 +81,23 @@ export default function TagInput({ tags, onChange }: TagInputProps) {
     // Validate tag format
     const formatValidation = validateTagFormat(tagName);
     if (!formatValidation.valid) {
+      console.log('Tag format validation failed:', formatValidation.error);
       setError(formatValidation.error || 'Invalid tag format');
       return;
     }
 
     const normalized = normalizeTagName(tagName);
+    console.log('Normalized tag name:', normalized);
 
     // Check for duplicates
     if (isDuplicateTag(normalized, tags)) {
+      console.log('Duplicate tag detected');
       setError('This tag is already added');
       return;
     }
 
     // Add tag
+    console.log('Adding tag to array, calling onChange with:', [...tags, normalized]);
     onChange([...tags, normalized]);
     setInputValue('');
     setSuggestions([]);
@@ -106,10 +113,15 @@ export default function TagInput({ tags, onChange }: TagInputProps) {
 
   // Handle Enter key
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    console.log('Key pressed:', e.key, 'Input value:', inputValue);
     if (e.key === 'Enter') {
       e.preventDefault();
+      e.stopPropagation(); // Prevent form submission
       if (inputValue.trim()) {
+        console.log('Calling addTag from Enter key');
         addTag(inputValue);
+      } else {
+        console.log('Input value is empty after trim');
       }
     }
   };
@@ -123,8 +135,11 @@ export default function TagInput({ tags, onChange }: TagInputProps) {
     <div className="tag-input-container">
       <label htmlFor="tag-input" aria-label="Tags">
         Tags ({tags.length}/{MAX_TAGS_PER_SNIPPET})
+        <span style={{ fontSize: '0.875rem', color: '#666', marginLeft: '8px' }}>
+          Press Enter to add each tag
+        </span>
       </label>
-      
+
       {/* Display existing tags */}
       {tags.length > 0 && (
         <div className="tag-list">
@@ -200,6 +215,7 @@ export default function TagInput({ tags, onChange }: TagInputProps) {
           gap: 0.25rem;
           padding: 0.25rem 0.5rem;
           background-color: #e0e0e0;
+          color: #212121;
           border-radius: 4px;
           font-size: 0.875rem;
         }

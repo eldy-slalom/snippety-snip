@@ -40,6 +40,9 @@ describe("/api/snippets API Integration Tests", () => {
     // Initialize test database with schema
     const db = getDatabase();
 
+    // Drop table if exists to ensure clean slate
+    db.exec(`DROP TABLE IF EXISTS snippets`);
+
     // Create snippets table with all required fields
     db.exec(`
       CREATE TABLE IF NOT EXISTS snippets (
@@ -66,6 +69,7 @@ describe("/api/snippets API Integration Tests", () => {
       const requestBody = {
         title: "Test API Snippet",
         content: 'console.log("API test");',
+        tags: ["javascript", "test"],
       };
 
       const request = new NextRequest("http://localhost:3000/api/snippets", {
@@ -92,6 +96,7 @@ describe("/api/snippets API Integration Tests", () => {
       const requestBody = {
         title: "Line Endings Test",
         content: "Line 1\r\nLine 2\r\nLine 3",
+        tags: ["test"],
       };
 
       const request = new NextRequest("http://localhost:3000/api/snippets", {
@@ -113,6 +118,7 @@ describe("/api/snippets API Integration Tests", () => {
       const requestBody = {
         title: "",
         content: "some content",
+        tags: ["test"],
       };
 
       const request = new NextRequest("http://localhost:3000/api/snippets", {
@@ -138,6 +144,7 @@ describe("/api/snippets API Integration Tests", () => {
       const requestBody = {
         title: "   \t  \n  ",
         content: "some content",
+        tags: ["test"],
       };
 
       const request = new NextRequest("http://localhost:3000/api/snippets", {
@@ -163,6 +170,7 @@ describe("/api/snippets API Integration Tests", () => {
       const requestBody = {
         title: "Valid Title",
         content: "",
+        tags: ["test"],
       };
 
       const request = new NextRequest("http://localhost:3000/api/snippets", {
@@ -186,6 +194,7 @@ describe("/api/snippets API Integration Tests", () => {
       const requestBody = {
         title: "Valid Title",
         content: "   \t  \n  ",
+        tags: ["test"],
       };
 
       const request = new NextRequest("http://localhost:3000/api/snippets", {
@@ -211,6 +220,7 @@ describe("/api/snippets API Integration Tests", () => {
       const requestBody = {
         title: "",
         content: "",
+        tags: ["test"],
       };
 
       const request = new NextRequest("http://localhost:3000/api/snippets", {
@@ -238,6 +248,7 @@ describe("/api/snippets API Integration Tests", () => {
       const requestBody = {
         title: "Large Content Test",
         content: largeContent,
+        tags: ["test"],
       };
 
       const request = new NextRequest("http://localhost:3000/api/snippets", {
@@ -261,6 +272,7 @@ describe("/api/snippets API Integration Tests", () => {
       const requestBody = {
         title: "Too Large Content Test",
         content: tooLargeContent,
+        tags: ["test"],
       };
 
       const request = new NextRequest("http://localhost:3000/api/snippets", {
@@ -292,6 +304,7 @@ describe("/api/snippets API Integration Tests", () => {
       const requestBody = {
         title: "Test Snippet",
         content: "test content",
+        tags: ["test"],
       };
 
       const request = new NextRequest("http://localhost:3000/api/snippets", {
@@ -329,11 +342,13 @@ describe("/api/snippets API Integration Tests", () => {
       const snippet1 = SnippetService.createBasicSnippet({
         title: "First Snippet",
         content: "first content",
+        tags: ["test"],
       });
 
       const snippet2 = SnippetService.createBasicSnippet({
         title: "Second Snippet",
         content: "second content",
+        tags: ["test"],
       });
 
       const response = await GET();
