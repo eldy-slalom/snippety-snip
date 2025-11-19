@@ -7,6 +7,11 @@
   padding-left: var(--spacing-md);
   padding-right: var(--spacing-md);
   box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.85);
+  border-radius: 8px;
+  border: 6px solid #000000;
+  padding-top: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
 }
 
 .row {
@@ -151,6 +156,10 @@
   margin-bottom: 16px;
 }
 
+.snippet-card {
+  background: #f5392c !important;
+}
+
 .language-badge {
   display: inline-flex;
   align-items: center;
@@ -167,10 +176,74 @@
 }
 
 .theme-toggle-container {
-  position: fixed;
-  top: 24px;
-  right: 24px;
-  z-index: 1000;
+  position: fixed !important;
+  top: 20px !important;
+  right: 20px !important;
+  left: auto !important;
+  z-index: 1000 !important;
+  width: auto !important;
+  flex: none !important;
+  align-self: auto !important;
+}
+
+/* Rainbow Brite Heading */
+.rainbow-brite-heading {
+  font-family: "Comic Sans MS", "Comic Sans", "Chalkboard SE", "Comic Neue",
+    cursive;
+  font-size: 3.5rem;
+  font-weight: 900;
+  line-height: 1.1;
+  text-align: center;
+  margin: 24px 0;
+  position: relative;
+  display: inline-block;
+  letter-spacing: 3px;
+  color: #ffffff;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+.rainbow-brite-heading::before {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbowShift 4s ease-in-out infinite;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+@keyframes rainbowShift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@media (max-width: 600px) {
+  .rainbow-brite-heading {
+    font-size: 2.5rem;
+  }
+
+  .rainbow-brite-heading::before,
+  .rainbow-brite-heading::after {
+    font-size: 1.2rem;
+  }
+
+  .rainbow-brite-heading::before {
+    left: -30px;
+  }
+
+  .rainbow-brite-heading::after {
+    right: -30px;
+  }
 }
 
 /* FORMS */
@@ -202,6 +275,31 @@ select:focus {
   box-shadow: 0 0 0 2px rgba(0, 255, 65, 0.12);
   outline: none;
 }
+
+input::placeholder,
+textarea::placeholder {
+  color: #ffffff !important;
+  opacity: 1;
+}
+
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+  color: #ffffff !important;
+  opacity: 1;
+}
+
+input::-moz-placeholder,
+textarea::-moz-placeholder {
+  color: #ffffff !important;
+  opacity: 1;
+}
+
+input:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
+  color: #ffffff !important;
+  opacity: 1;
+}
+
 .form-error {
   color: var(--color-error);
   font-size: 14px;
@@ -260,6 +358,40 @@ body.theme-light {
   color-scheme: light;
 }
 
+body.theme-light .container {
+  background: #00ff37 !important;
+}
+
+body.theme-light .container,
+body.theme-light .container * {
+  color: #000000 !important;
+}
+
+body.theme-light .container input::placeholder,
+body.theme-light .container textarea::placeholder {
+  color: #ffffff !important;
+}
+
+body.theme-light .container input::-webkit-input-placeholder,
+body.theme-light .container textarea::-webkit-input-placeholder {
+  color: #ffffff !important;
+}
+
+body.theme-light .container input::-moz-placeholder,
+body.theme-light .container textarea::-moz-placeholder {
+  color: #ffffff !important;
+}
+
+body.theme-light .container input:-ms-input-placeholder,
+body.theme-light .container textarea:-ms-input-placeholder {
+  color: #ffffff !important;
+}
+
+body.theme-light .snippet-preview {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
 body.theme-dark {
   color-scheme: dark;
 }
@@ -276,6 +408,276 @@ body {
   font-family: var(--font-family-mono);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+
+body > * {
+  width: 100%;
+}
+
+body > .theme-toggle-container {
+  width: auto !important;
+  flex: none !important;
+  align-self: auto !important;
+}
+
+/* Rainbow Brite background animations */
+:root {
+  --rainbow-pos-1-x: 10%;
+  --rainbow-pos-1-y: 20%;
+  --rainbow-pos-2-x: 90%;
+  --rainbow-pos-2-y: 15%;
+  --rainbow-pos-3-x: 5%;
+  --rainbow-pos-3-y: 80%;
+  --rainbow-pos-4-x: 95%;
+  --rainbow-pos-4-y: 85%;
+  --rainbow-pos-5-x: 50%;
+  --rainbow-pos-5-y: 50%;
+}
+
+@keyframes rainbowFlow1 {
+  0%,
+  100% {
+    --rainbow-pos-1-x: 10%;
+    --rainbow-pos-1-y: 20%;
+    --rainbow-pos-2-x: 90%;
+    --rainbow-pos-2-y: 15%;
+    --rainbow-pos-3-x: 5%;
+    --rainbow-pos-3-y: 80%;
+    --rainbow-pos-4-x: 95%;
+    --rainbow-pos-4-y: 85%;
+    --rainbow-pos-5-x: 50%;
+    --rainbow-pos-5-y: 50%;
+  }
+  25% {
+    --rainbow-pos-1-x: 12%;
+    --rainbow-pos-1-y: 18%;
+    --rainbow-pos-2-x: 88%;
+    --rainbow-pos-2-y: 17%;
+    --rainbow-pos-3-x: 7%;
+    --rainbow-pos-3-y: 78%;
+    --rainbow-pos-4-x: 93%;
+    --rainbow-pos-4-y: 87%;
+    --rainbow-pos-5-x: 52%;
+    --rainbow-pos-5-y: 48%;
+  }
+  50% {
+    --rainbow-pos-1-x: 8%;
+    --rainbow-pos-1-y: 22%;
+    --rainbow-pos-2-x: 92%;
+    --rainbow-pos-2-y: 13%;
+    --rainbow-pos-3-x: 3%;
+    --rainbow-pos-3-y: 82%;
+    --rainbow-pos-4-x: 97%;
+    --rainbow-pos-4-y: 83%;
+    --rainbow-pos-5-x: 48%;
+    --rainbow-pos-5-y: 52%;
+  }
+  75% {
+    --rainbow-pos-1-x: 11%;
+    --rainbow-pos-1-y: 19%;
+    --rainbow-pos-2-x: 89%;
+    --rainbow-pos-2-y: 16%;
+    --rainbow-pos-3-x: 6%;
+    --rainbow-pos-3-y: 79%;
+    --rainbow-pos-4-x: 94%;
+    --rainbow-pos-4-y: 86%;
+    --rainbow-pos-5-x: 51%;
+    --rainbow-pos-5-y: 49%;
+  }
+}
+
+@keyframes rainbowFlow2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(10px, -15px) scale(1.01);
+  }
+}
+
+/* Rainbow Brite background for landing page */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: 
+    /* Rainbow arc 1 - top left - Big and Bubbly */ radial-gradient(
+      ellipse 2000px 1000px at var(--rainbow-pos-1-x) var(--rainbow-pos-1-y),
+      transparent 30%,
+      #000000 30%,
+      #000000 31%,
+      #ff0000 31%,
+      #ff0000 38%,
+      #000000 38%,
+      #000000 39%,
+      #ff7f00 39%,
+      #ff7f00 46%,
+      #000000 46%,
+      #000000 47%,
+      #ffff00 47%,
+      #ffff00 54%,
+      #000000 54%,
+      #000000 55%,
+      #00ff00 55%,
+      #00ff00 62%,
+      #000000 62%,
+      #000000 63%,
+      #0000ff 63%,
+      #0000ff 70%,
+      #000000 70%,
+      #000000 71%,
+      #8b00ff 71%,
+      #8b00ff 78%,
+      #000000 78%,
+      #000000 79%,
+      transparent 79%
+    ),
+    /* Rainbow arc 2 - top right - Big and Bubbly */
+      radial-gradient(
+        ellipse 2200px 1100px at var(--rainbow-pos-2-x) var(--rainbow-pos-2-y),
+        transparent 28%,
+        #000000 28%,
+        #000000 29%,
+        #ff0000 29%,
+        #ff0000 36%,
+        #000000 36%,
+        #000000 37%,
+        #ff7f00 37%,
+        #ff7f00 44%,
+        #000000 44%,
+        #000000 45%,
+        #ffff00 45%,
+        #ffff00 52%,
+        #000000 52%,
+        #000000 53%,
+        #00ff00 53%,
+        #00ff00 60%,
+        #000000 60%,
+        #000000 61%,
+        #0000ff 61%,
+        #0000ff 68%,
+        #000000 68%,
+        #000000 69%,
+        #8b00ff 69%,
+        #8b00ff 76%,
+        #000000 76%,
+        #000000 77%,
+        transparent 77%
+      ),
+    /* Rainbow arc 3 - bottom left - Big and Bubbly */
+      radial-gradient(
+        ellipse 1800px 900px at var(--rainbow-pos-3-x) var(--rainbow-pos-3-y),
+        transparent 32%,
+        #000000 32%,
+        #000000 33%,
+        #ff0000 33%,
+        #ff0000 40%,
+        #000000 40%,
+        #000000 41%,
+        #ff7f00 41%,
+        #ff7f00 48%,
+        #000000 48%,
+        #000000 49%,
+        #ffff00 49%,
+        #ffff00 56%,
+        #000000 56%,
+        #000000 57%,
+        #00ff00 57%,
+        #00ff00 64%,
+        #000000 64%,
+        #000000 65%,
+        #0000ff 65%,
+        #0000ff 72%,
+        #000000 72%,
+        #000000 73%,
+        #8b00ff 73%,
+        #8b00ff 80%,
+        #000000 80%,
+        #000000 81%,
+        transparent 81%
+      ),
+    /* Rainbow arc 4 - bottom right - Big and Bubbly */
+      radial-gradient(
+        ellipse 2400px 1200px at var(--rainbow-pos-4-x) var(--rainbow-pos-4-y),
+        transparent 26%,
+        #000000 26%,
+        #000000 27%,
+        #ff0000 27%,
+        #ff0000 34%,
+        #000000 34%,
+        #000000 35%,
+        #ff7f00 35%,
+        #ff7f00 42%,
+        #000000 42%,
+        #000000 43%,
+        #ffff00 43%,
+        #ffff00 50%,
+        #000000 50%,
+        #000000 51%,
+        #00ff00 51%,
+        #00ff00 58%,
+        #000000 58%,
+        #000000 59%,
+        #0000ff 59%,
+        #0000ff 66%,
+        #000000 66%,
+        #000000 67%,
+        #8b00ff 67%,
+        #8b00ff 74%,
+        #000000 74%,
+        #000000 75%,
+        transparent 75%
+      ),
+    /* Rainbow arc 5 - center - Big and Bubbly */
+      radial-gradient(
+        ellipse 2600px 1300px at var(--rainbow-pos-5-x) var(--rainbow-pos-5-y),
+        transparent 25%,
+        #000000 25%,
+        #000000 26%,
+        #ff0000 26%,
+        #ff0000 33%,
+        #000000 33%,
+        #000000 34%,
+        #ff7f00 34%,
+        #ff7f00 41%,
+        #000000 41%,
+        #000000 42%,
+        #ffff00 42%,
+        #ffff00 49%,
+        #000000 49%,
+        #000000 50%,
+        #00ff00 50%,
+        #00ff00 57%,
+        #000000 57%,
+        #000000 58%,
+        #0000ff 58%,
+        #0000ff 65%,
+        #000000 65%,
+        #000000 66%,
+        #8b00ff 66%,
+        #8b00ff 73%,
+        #000000 73%,
+        #000000 74%,
+        transparent 74%
+      ),
+    /* Base background */ var(--color-bg-primary);
+  background-attachment: fixed;
+  background-size: 100% 100%;
+  pointer-events: none;
+  animation: rainbowFlow1 25s ease-in-out infinite,
+    rainbowFlow2 15s ease-in-out infinite;
+  will-change: transform;
 }
 
 * {
@@ -296,7 +698,7 @@ a:focus {
 
 @media (max-width: 600px) {
   .theme-toggle-container {
-    top: 16px;
-    right: 16px;
+    top: 20px !important;
+    right: 20px !important;
   }
 }

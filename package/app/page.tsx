@@ -11,7 +11,7 @@ export default async function Home() {
   return (
     <div className="container">
       <header className="page-header">
-        <h1 style={{ margin: '24px 0px 0px 0px' }}>My Snippets</h1>
+        <h1 className="rainbow-brite-heading" data-text="My Snippets" style={{ margin: '24px 0px 0px 0px' }}>My Snippets</h1>
         <Link href="/snippets/new" className="btn btn-primary" style={{ fontWeight: '700', color: 'black', margin: '16px 0px' }} >
           + Add New Snippet
         </Link>
